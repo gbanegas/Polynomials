@@ -1,3 +1,6 @@
+package br.labsec.thesis.tests;
+import br.labsec.thesis.polynomials.Polynomial;
+
 
 public class TestPoly {
 	public static void main(String[] args) {
