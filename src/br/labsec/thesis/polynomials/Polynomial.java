@@ -1,4 +1,5 @@
 package br.labsec.thesis.polynomials;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -49,12 +50,7 @@ public class Polynomial implements Comparable<Polynomial> {
 		Arrays.sort(arrayToConcat);
 		int[] vecBits = new int[arrayToConcat[arrayToConcat.length - 1] + 1];
 		for (int i = 0; i < arrayToConcat.length; i++) {
-			int temp = arrayToConcat[i];
-
-			if (temp == 1)
-				vecBits[0] = 1;
-			else
-				vecBits[temp] = 1;
+			vecBits[arrayToConcat[i]] = 1;
 		}
 
 		for (int i = 0; i < vecBits.length; i++) {
@@ -62,8 +58,6 @@ public class Polynomial implements Comparable<Polynomial> {
 
 		}
 		BigInteger big = new BigInteger(toBin, 2);
-
-	
 
 		return createFromBytes(big.toByteArray());
 
