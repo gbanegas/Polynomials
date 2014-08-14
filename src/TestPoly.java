@@ -1,12 +1,19 @@
 
 public class TestPoly {
 	public static void main(String[] args) {
-		Polynomial pa = Trinomial.createFromLong(0x51);
+		//Polynomial pa = Trinomial.createFromLong(0x51);
 		
-		System.out.println(pa.toPolynomialString());
+		Polynomial aa = Polynomial.createFromString("x^3000 + x^3 + 1");
+		
+		System.out.println(aa.toPolynomialString());
+		
+		System.out.println(aa.isIReducible());
+		//System.out.println(aa.toPolynomialString());
+	/*	System.out.println(pa.toPolynomialString());
 		
 		try {
 			Trinomial t = new Trinomial(pa);
+			System.out.println(t.toHexString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -22,6 +29,6 @@ public class TestPoly {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 }
