@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
@@ -22,12 +23,19 @@ public class TrinomialContXor {
 
 	private int m_row = 1;
 
+	private int totalXor;
+
 	public TrinomialContXor(Trinomial trinomial) {
 
 		this.trinomial = trinomial;
 		workbook = new HSSFWorkbook();
 		sheet = workbook.createSheet("Sheet_1");
 		this.optmize();
+	}
+
+	public int getTotalXor() {
+		
+		return totalXor;
 	}
 
 	private void optmize() {
@@ -46,9 +54,9 @@ public class TrinomialContXor {
 		this.reductionBy(0, max_size);
 		this.reductionBy(this.trinomial.getA().intValue(), max_size);
 		int t = 1;
-		nr = nr-1;
+		nr = nr - 1;
 		for (int i = 0; i < nr; i++) {
-			
+
 			if (t % 2 == 0)
 				this.othersReductions(this.trinomial.getA().intValue(), i + 2);
 			else
@@ -56,7 +64,77 @@ public class TrinomialContXor {
 			t++;
 		}
 
+		this.repeatRemove();
+
+		this.countXor();
 		saveXls();
+	}
+
+	private void countXor() {
+
+		int nextRow = this.m_row + 2;
+		Row rowToWrite = sheet.createRow(nextRow);
+
+		Row row = sheet.getRow(0);
+
+		for (int i = this.trinomial.degree().intValue() - 1; i < sheet.getRow(0).getPhysicalNumberOfCells(); i++) {
+			int tempXor = 1;
+			Cell cell = row.getCell(i);
+
+			if (cell != null) {
+				for (int l = 1; l < this.m_row; l++) {
+					Row rowToCompare = sheet.getRow(l);
+					Cell cellToCompare = rowToCompare.getCell(i);
+					if (cellToCompare != null) {
+						tempXor++;
+					}
+				}
+			}
+
+			Cell c = rowToWrite.createCell(i);
+			tempXor = tempXor-1;
+			c.setCellValue(tempXor);
+
+		}
+
+		Cell c = rowToWrite.createCell(sheet.getRow(0)
+				.getPhysicalNumberOfCells());
+		String columnLetter = CellReference
+				.convertNumToColString(this.trinomial.degree().intValue() - 1);
+		String columnLetter_ = CellReference.convertNumToColString(sheet
+				.getRow(0).getPhysicalNumberOfCells() - 1);
+		nextRow++;
+		String format = "SUM(" + columnLetter + nextRow + ":" + columnLetter_
+				+ nextRow + ")";
+		c.setCellFormula(format);
+		c.setCellType(Cell.CELL_TYPE_FORMULA);
+
+	}
+
+	private void repeatRemove() {
+
+		for (int j = 0; j < this.m_row; j++) {
+			for (int i = this.trinomial.degree().intValue() - 1; i < sheet
+					.getRow(0).getPhysicalNumberOfCells(); i++) {
+				Row row = sheet.getRow(j);
+				Cell cell = row.getCell(i);
+				if (cell != null) {
+					for (int l = j + 1; l < this.m_row; l++) {
+						Row rowToCompare = sheet.getRow(l);
+						Cell cellToCompare = rowToCompare.getCell(i);
+						if (cellToCompare != null) {
+							if (cellToCompare.getNumericCellValue() == cell
+									.getNumericCellValue()) {
+								cell.setCellType(Cell.CELL_TYPE_BLANK);
+								cellToCompare.setCellType(Cell.CELL_TYPE_BLANK);
+							}
+						}
+					}
+				}
+
+			}
+		}
+
 	}
 
 	private void othersReductions(int exp, int interaction) {
@@ -89,18 +167,18 @@ public class TrinomialContXor {
 		int row_temp = this.m_row;
 		Integer size = Integer.valueOf(this.m_row);
 
-		for (int i = interaction-1; i < size; i++) {
+		for (int i = interaction - 1; i < size; i++) {
 			Row rowToWrite = sheet.createRow(row_temp++);
 			Row row = sheet.getRow(i);
 			int j = 0;
-			for (int h = 0; h < sheet.getRow(0).getPhysicalNumberOfCells();h++ ) {
+			for (int h = 0; h < sheet.getRow(0).getPhysicalNumberOfCells(); h++) {
 				Cell cell = row.getCell(h);
-				
+
 				if (cell != null) {
 					Integer number = (int) (cell.getNumericCellValue());
-					
+
 					if (expWhereToSave.containsKey(((number)))) {
-						
+
 						Cell cellToWrite = rowToWrite.createCell(j);
 						cellToWrite.setCellValue(expWhereToSave.get(number));
 					}
@@ -167,7 +245,8 @@ public class TrinomialContXor {
 
 	private void saveXls() {
 		try {
-			FileOutputStream out = new FileOutputStream(new File("Teste.xls"));
+			String fileName = "Reduction_" + this.trinomial.degree().toString()+"_"+this.trinomial.getA().toString()+".xls";
+			FileOutputStream out = new FileOutputStream(new File(fileName));
 			workbook.write(out);
 			out.close();
 			System.out.println("Excel written successfully..");
