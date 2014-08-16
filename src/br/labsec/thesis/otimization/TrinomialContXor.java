@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 
 import br.labsec.thesis.polynomials.Trinomial;
 
-public class TrinomialContXor extends Thread{
+public class TrinomialContXor extends Thread {
 
 	private Trinomial trinomial;
 	private HSSFWorkbook workbook;
