@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Fri Aug 15 23:51:45 BRT 2014
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=Alg_fat.jar
+manifest.mergeall=true
+manifest.mainclass=br.labsec.thesis.gui.MainWindow
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
