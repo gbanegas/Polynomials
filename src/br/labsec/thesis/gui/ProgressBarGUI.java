@@ -1,11 +1,10 @@
 package br.labsec.thesis.gui;
 
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import javax.swing.JWindow;
 
 import br.labsec.thesis.threads.ProgressBar;
 
-public class ProgressBarGUI extends JFrame {
+public class ProgressBarGUI extends JWindow {
 	/**
 	 * 
 	 */
@@ -37,14 +36,12 @@ public class ProgressBarGUI extends JFrame {
 		initComponents();
 		// setBounds (new Rectangle (200, 200, 100, 100));
 		// setPreferredSize (new Dimension (300, 200));
-		setTitle("Polynomial Progress");
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		//setTitle("Polynomial Progress");
 
 		proc = new ProgressBar();
 		proc.setProgressBar(this.jProgressBar1);
 		proc.setTextArea(jTextField1);
 
-		
 	}
 
 	private void initComponents() {
@@ -52,7 +49,6 @@ public class ProgressBarGUI extends JFrame {
 		jProgressBar1 = new javax.swing.JProgressBar();
 		jTextField1 = new javax.swing.JTextField();
 
-		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
 		jTextField1.setText("jTextField1");
 
@@ -83,11 +79,4 @@ public class ProgressBarGUI extends JFrame {
 		pack();
 	}
 
-	public static void main(String[] args) {
-		ProgressBarGUI tb = new ProgressBarGUI();
-		tb.pack();
-		tb.setVisible(true);
-	}
-
-	
 }

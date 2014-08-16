@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 
 import br.labsec.thesis.polynomials.Trinomial;
 
-public class TrinomialContXor {
+public class TrinomialContXor extends Thread{
 
 	private Trinomial trinomial;
 	private HSSFWorkbook workbook;
@@ -31,6 +31,10 @@ public class TrinomialContXor {
 		this.trinomial = trinomial;
 		workbook = new HSSFWorkbook();
 		sheet = workbook.createSheet("Sheet_1");
+		
+	}
+	@Override
+	public void run(){
 		this.optmize();
 	}
 
