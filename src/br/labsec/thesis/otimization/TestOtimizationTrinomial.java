@@ -10,7 +10,7 @@ public class TestOtimizationTrinomial {
 		try {
 			tri = new Trinomial(Polynomial.createFromString("x^17+x^5+x^0"));
 			System.out.println(tri.toPolynomialString());
-			TrinomialContXor cont = new TrinomialContXor(tri);
+		//	TrinomialContXor cont = new TrinomialContXor(tri);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -25,6 +25,7 @@ public class TrinomialContXor {
 
 	private int totalXor;
 
+	private String fName;
 	public TrinomialContXor(Trinomial trinomial) {
 
 		this.trinomial = trinomial;
@@ -96,7 +97,15 @@ public class TrinomialContXor {
 			c.setCellValue(tempXor);
 
 		}
-
+		
+		Row rowToReed = sheet.getRow(nextRow);
+		int counter = 0;
+		for(Cell xo: rowToReed)
+		{
+			int tx = (int)xo.getNumericCellValue();
+			counter = counter +tx;
+		}
+		this.totalXor = counter;
 		Cell c = rowToWrite.createCell(sheet.getRow(0)
 				.getPhysicalNumberOfCells());
 		String columnLetter = CellReference
@@ -104,10 +113,11 @@ public class TrinomialContXor {
 		String columnLetter_ = CellReference.convertNumToColString(sheet
 				.getRow(0).getPhysicalNumberOfCells() - 1);
 		nextRow++;
-		String format = "SUM(" + columnLetter + nextRow + ":" + columnLetter_
-				+ nextRow + ")";
+		String format = "SUM(" + columnLetter + nextRow + ":" + columnLetter_+ nextRow + ")";
 		c.setCellFormula(format);
 		c.setCellType(Cell.CELL_TYPE_FORMULA);
+		
+	
 
 	}
 
@@ -249,6 +259,7 @@ public class TrinomialContXor {
 			FileOutputStream out = new FileOutputStream(new File(fileName));
 			workbook.write(out);
 			out.close();
+			this.setfName(fileName);
 			System.out.println("Excel written successfully..");
 
 		} catch (FileNotFoundException e) {
@@ -256,6 +267,14 @@ public class TrinomialContXor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getfName() {
+		return fName;
+	}
+
+	private void setfName(String fName) {
+		this.fName = fName;
 	}
 
 }
