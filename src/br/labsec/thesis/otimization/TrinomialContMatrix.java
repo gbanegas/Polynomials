@@ -50,7 +50,7 @@ public class TrinomialContMatrix implements Runnable {
 			nr = 2 * (this.tri.getA().intValue() + 1)
 					- this.tri.degree().intValue();
 		}
-		this.max_row = (nr * 3) + 5;
+		this.max_row = (nr * 2) + 5;
 
 		this.generateFirstRowAndMatrix();
 
@@ -140,8 +140,9 @@ public class TrinomialContMatrix implements Runnable {
 	}
 
 	private void othersReductions(int interaction) {
-		double[] row = matrix.getRow(interaction - 1);
-		double[] rowToReduce = matrix.getRow(interaction);
+		//TODO:refactor the method
+		double[] row = matrix.getRow(interaction-1);
+		double[] rowToReduce = matrix.getRow(interaction+1);
 
 		HashMap<Double, Double> expWhereToSave = new HashMap<Double, Double>();
 		for (int i = 0; i < matrix.getColumnDimension(); i++) {
@@ -163,7 +164,7 @@ public class TrinomialContMatrix implements Runnable {
 		Integer size = Integer.valueOf(this.m_row);
 
 		boolean changed = false;
-		for (int i = interaction; i < size; i++) {
+		for (int i = size-2; i < size; i++) {
 			double[] rowToWrite = matrix.getRow(row_temp);
 			double[] row = matrix.getRow(i);
 			int j = 0;
@@ -267,7 +268,12 @@ public class TrinomialContMatrix implements Runnable {
 				Row row = sheet.createRow(i);
 				for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
 					Cell cell = row.createCell(j);
-					cell.setCellValue(this.matrix.getEntry(i, j));
+					double value = this.matrix.getEntry(i, j);
+					if(value == NULL)
+						cell.setCellType(Cell.CELL_TYPE_BLANK);
+					else
+						cell.setCellValue(value);
+						
 				}
 			}
 
