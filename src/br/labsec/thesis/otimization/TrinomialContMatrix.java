@@ -50,7 +50,7 @@ public class TrinomialContMatrix implements Runnable {
 			nr = 2 * (this.tri.getA().intValue() + 1)
 					- this.tri.degree().intValue();
 		}
-		this.max_row = (nr * 3) + 1;
+		this.max_row = (nr * 3) + 5;
 
 		this.generateFirstRowAndMatrix();
 
@@ -68,7 +68,7 @@ public class TrinomialContMatrix implements Runnable {
 		this.reductionBy(this.tri.getA().intValue(), bigMaxSize);
 		nr = nr - 1;
 		for (int i = 0; i < nr; i++) {
-			this.othersReductions(i + 2);
+			this.othersReductions(i+1);
 		}
 
 		this.repeatRemove();
@@ -116,8 +116,7 @@ public class TrinomialContMatrix implements Runnable {
 
 		for (int j = 0; j < this.m_row; j++) {
 			double[] row = matrix.getRow(j);
-			for (int i = this.tri.degree().intValue() - 1; i < matrix
-					.getRowDimension(); i++) {
+			for (int i = this.tri.degree().intValue() - 1; i < matrix.getColumnDimension(); i++) {
 
 				double cell = row[i];
 				if (cell != NULL) {
@@ -141,7 +140,7 @@ public class TrinomialContMatrix implements Runnable {
 	}
 
 	private void othersReductions(int interaction) {
-		double[] row = matrix.getRow(interaction - 2);
+		double[] row = matrix.getRow(interaction - 1);
 		double[] rowToReduce = matrix.getRow(interaction);
 
 		HashMap<Double, Double> expWhereToSave = new HashMap<Double, Double>();
@@ -163,8 +162,9 @@ public class TrinomialContMatrix implements Runnable {
 		int row_temp = this.m_row;
 		Integer size = Integer.valueOf(this.m_row);
 
-		for (int i = interaction - 1; i < size; i++) {
-			double[] rowToWrite = matrix.getRow(row_temp++);
+		boolean changed = false;
+		for (int i = interaction; i < size; i++) {
+			double[] rowToWrite = matrix.getRow(row_temp);
 			double[] row = matrix.getRow(i);
 			int j = 0;
 			for (int h = 0; h < matrix.getColumnDimension(); h++) {
@@ -176,30 +176,20 @@ public class TrinomialContMatrix implements Runnable {
 					if (expWhereToSave.containsKey(((number)))) {
 
 						rowToWrite[j] = expWhereToSave.get(number);
+						changed = true;
 					}
 				}
 				j++;
 			}
-			this.matrix.setRow(row_temp - 1, rowToWrite);
+			if(changed){
+				this.matrix.setRow(row_temp, rowToWrite);
+				row_temp++;
+				changed=false;
+			}
 		}
 		this.m_row = row_temp;
 
 	}
-
-	/*
-	 * private void mount(HashMap<Double, Double> expWhereToSave, int
-	 * interaction) { int row_temp = Integer.valueOf(this.m_row); boolean
-	 * isNeedUpdate = false; for (int i = interaction; i <
-	 * matrix.getRowDimension(); i++) { double[] rowToWrite =
-	 * matrix.getRow(row_temp); double[] row = matrix.getRow(i); int j = 0; for
-	 * (int h = 0; h < matrix.getColumnDimension(); h++) { Double cell = row[h];
-	 * if (cell != NULL) { if (expWhereToSave.containsKey(((cell)))) {
-	 * rowToWrite[j] = expWhereToSave.get(cell); isNeedUpdate = true; } } j++; }
-	 * 
-	 * if(isNeedUpdate){ matrix.setRow(row_temp, rowToWrite); row_temp++; } }
-	 * 
-	 * this.m_row = row_temp; }
-	 */
 
 	private void reductionBy(int exp, BigInteger max_size) {
 		BigInteger counter = this.tri.degree();
@@ -277,11 +267,7 @@ public class TrinomialContMatrix implements Runnable {
 				Row row = sheet.createRow(i);
 				for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
 					Cell cell = row.createCell(j);
-					if (this.matrix.getEntry(i, j) == -1) {
-						cell.setCellValue(Cell.CELL_TYPE_BLANK);
-					} else {
-						cell.setCellValue(this.matrix.getEntry(i, j));
-					}
+					cell.setCellValue(this.matrix.getEntry(i, j));
 				}
 			}
 
