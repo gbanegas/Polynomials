@@ -1,10 +1,20 @@
 package br.labsec.thesis.otimization;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 
+import javax.naming.LimitExceededException;
+
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 
 import br.labsec.thesis.polynomials.Pentanomial;
 
@@ -39,34 +49,45 @@ public class PentanomialContMatrix implements Runnable {
 
 		firtsReduction();
 		nr = nr - 1;
-		/*
-		 * for (int i = 0; i < nr; i++) { this.othersReductions(i+1); }
-		 */
+
+		for (int i = 0; i < nr; i++) {
+			this.othersReductions(i + 1);
+		}
+
 	}
 
 	private void othersReductions(int interaction) {
 		// TODO:refactor the method
-		double[] row = matrix.getRow(interaction - 1);
-		double[] rowToReduce = matrix.getRow(interaction + 2);
-
+		int temp = interaction;
 		HashMap<Double, Double> expWhereToSave = new HashMap<Double, Double>();
-		for (int i = 0; i < matrix.getColumnDimension(); i++) {
-			if (row[i] != NULL && rowToReduce[i] != NULL) {
-				boolean validy = (row[i] >= this.pent.degree().doubleValue());
+		for (int j = 1; j < 4; j++) {
+			double[] row = matrix.getRow(temp - 1);
+			double[] rowToReduce = matrix.getRow(temp + 2);
 
-				if (validy) {
-					expWhereToSave.put(row[i], rowToReduce[i]);
+			
+			for (int i = 0; i < matrix.getColumnDimension(); i++) {
+
+				double r1 = row[i];
+				double r2 = rowToReduce[i];
+				if (r1 != NULL && r2 != NULL) {
+					boolean validy = (r1 >= this.pent.degree().doubleValue());
+
+					if (validy) {
+						expWhereToSave.put(r1, r2);
+					}
 				}
 			}
+			temp++;
 		}
 
 		this.mount(expWhereToSave, interaction);
+	
+
 	}
 
 	private void mount(HashMap<Double, Double> expWhereToSave, int interaction) {
 		int row_temp = this.m_row;
 		Integer size = Integer.valueOf(this.m_row);
-
 		boolean changed = false;
 		for (int i = size - 2; i < size; i++) {
 			double[] rowToWrite = matrix.getRow(row_temp);
@@ -78,8 +99,7 @@ public class PentanomialContMatrix implements Runnable {
 				if (cell != NULL) {
 					Double number = (Double) (cell);
 
-					if (expWhereToSave.containsKey(((number)))) {
-
+					if (expWhereToSave.containsKey(number)) {
 						rowToWrite[j] = expWhereToSave.get(number);
 						changed = true;
 					}
@@ -93,6 +113,28 @@ public class PentanomialContMatrix implements Runnable {
 			}
 		}
 		this.m_row = row_temp;
+
+	}
+
+	private boolean needToWrite(double[] rr, int row_temp) {
+		double[] temp = this.matrix.getRow(row_temp);
+		for (int i = 0; i < rr.length; i++) {
+			Double ri = rr[i];
+			for (int j = 0; j < temp.length; j++) {
+				Double re = temp[j];
+				if (re.equals(ri)) {
+					return false;
+				}
+			}
+
+		}
+		return true;
+	}
+
+	private void clean(double[] rr) {
+		for (int i = 0; i < rr.length; i++) {
+			rr[i] = NULL;
+		}
 
 	}
 
@@ -198,6 +240,45 @@ public class PentanomialContMatrix implements Runnable {
 
 	public String getfName() {
 		return fName;
+	}
+
+	public void saveXLS() throws LimitExceededException {
+
+		if (this.matrix.getColumnDimension() <= 16384) {
+			HSSFWorkbook workbook = new HSSFWorkbook();
+			HSSFSheet sheet = workbook.createSheet("Sheet_1");
+
+			for (int i = 0; i < this.matrix.getRowDimension(); i++) {
+				Row row = sheet.createRow(i);
+				for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
+					Cell cell = row.createCell(j);
+					double value = this.matrix.getEntry(i, j);
+					if (value == NULL)
+						cell.setCellType(Cell.CELL_TYPE_BLANK);
+					else
+						cell.setCellValue(value);
+
+				}
+			}
+
+			try {
+				String fileName = "Reduction_" + this.pent.degree().toString()
+						+ "_" + pent.getC() + "_" + pent.getB() + "_"
+						+ this.pent.getA().toString() + ".xls";
+				FileOutputStream out = new FileOutputStream(new File(fileName));
+				workbook.write(out);
+				out.close();
+				System.out.println("Excel written successfully..");
+
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			throw new LimitExceededException(
+					"The size of the columns is too big to create a xls file.");
+		}
 	}
 
 }

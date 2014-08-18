@@ -9,7 +9,7 @@ public class TestOtimizationPentanomial {
 	public static void main(String[] args) {
 		Pentanomial pent;
 		try {
-			pent = new Pentanomial(Polynomial.createFromString("x^16+x^3+x^2+x^1+x^0"));
+			pent = new Pentanomial(Polynomial.createFromString("x^17+x^3+x^2+x^1+x^0"));
 			System.out.println(pent.isIrreducible());
 			System.out.println(pent.toPolynomialString());
 			System.out.println(pent.getA());
@@ -18,6 +18,7 @@ public class TestOtimizationPentanomial {
 			
 			PentanomialContMatrix cont = new PentanomialContMatrix(pent);
 			cont.run();
+			cont.saveXLS();
 			System.out.println(cont.getTotalXor());
 			//cont.saveXLS();
 		//	TrinomialContXor cont = new TrinomialContXor(tri);
@@ -26,5 +27,6 @@ public class TestOtimizationPentanomial {
 			e.printStackTrace();
 		}
 	}
+
 
 }
