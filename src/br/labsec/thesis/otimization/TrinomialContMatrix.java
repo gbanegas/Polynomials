@@ -109,8 +109,8 @@ public class TrinomialContMatrix implements Runnable {
 
 		double[] rowToRead = matrix.getRow(nextRow);
 		int counter = 0;
-		for (double xo : rowToRead) {
-			int tx = (int) xo;
+		for (int i =this.tri.degree().intValue()-1; i < rowToRead.length;i++) {
+			int tx = (int) rowToRead[i];
 			counter = counter + tx;
 		}
 		this.totalXor = counter;
@@ -166,13 +166,11 @@ public class TrinomialContMatrix implements Runnable {
 	private void mount(HashMap<Double, Double> expWhereToSave, int interaction) {
 		int rowTemp1 = this.m_row;
 		Integer size = Integer.valueOf(this.m_row);
-		int rowTemp2 = this.m_row + 1;
 
 		
 		boolean changed = false;
 		for (int i = size-2; i < size; i++) {
-			double[] rowToWrite = matrix.getRow(rowTemp2);
-			double[] rr = new double[rowToWrite.length];
+			double[] rowToWrite = matrix.getRow(rowTemp1);
 			double[] row = matrix.getRow(i);
 			int j = 0;
 			for (int h = 0; h < matrix.getColumnDimension(); h++) {
@@ -182,7 +180,6 @@ public class TrinomialContMatrix implements Runnable {
 					Double number = (Double) (cell);
 
 					if (expWhereToSave.containsKey(((number)))) {
-						rr[j] = number;
 						rowToWrite[j] = expWhereToSave.get(number);
 						changed = true;
 					}
@@ -190,14 +187,12 @@ public class TrinomialContMatrix implements Runnable {
 				j++;
 			}
 			if(changed){
-				this.matrix.setRow(rowTemp2, rowToWrite);
-				this.matrix.setRow(rowTemp1, rr);
-				rowTemp2++;
+				this.matrix.setRow(rowTemp1, rowToWrite);
 				rowTemp1++;
 				changed=false;
 			}
 		}
-		this.m_row = rowTemp2;
+		this.m_row = rowTemp1;
 
 	}
 
