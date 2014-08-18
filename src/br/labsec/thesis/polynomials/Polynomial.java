@@ -145,6 +145,10 @@ public class Polynomial extends Thread implements Comparable<Polynomial> {
 		this.degrees = (TreeSet<BigInteger>) degrees.clone();
 	}
 
+	public TreeSet<BigInteger> getDegrees() {
+		return degrees;
+	}
+
 	/**
 	 * Factory for create the degrees collection.
 	 */

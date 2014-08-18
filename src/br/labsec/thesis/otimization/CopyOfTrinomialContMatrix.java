@@ -18,7 +18,7 @@ import org.apache.poi.ss.usermodel.Row;
 
 import br.labsec.thesis.polynomials.Trinomial;
 
-public class TrinomialContMatrix implements Runnable {
+public class CopyOfTrinomialContMatrix implements Runnable {
 
 	private static final double NULL = -1.0;
 	private Trinomial tri;
@@ -31,7 +31,7 @@ public class TrinomialContMatrix implements Runnable {
 	private int totalXor;
 	private String fName;
 
-	public TrinomialContMatrix(Trinomial toCalculate) {
+	public CopyOfTrinomialContMatrix(Trinomial toCalculate) {
 		this.tri = toCalculate;
 		this.m_row = 1;
 	}

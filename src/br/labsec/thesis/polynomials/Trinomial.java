@@ -9,7 +9,7 @@ public class Trinomial extends Polynomial {
 
 	public Trinomial(Polynomial p) throws Exception {
 		super(p);
-		if(this.degrees.size() > 3)
+		if(this.degrees.size() > 3 && p instanceof Trinomial)
 		{
 			throw new Exception("This is not a Trinomial.");
 		}

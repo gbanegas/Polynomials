@@ -11,7 +11,7 @@ public class Pentanomial extends Trinomial {
 	private BigInteger c;
 	public Pentanomial(Polynomial p) throws Exception {
 		super(p);
-		if(this.degrees.size() > 5)
+		if(this.degrees.size() > 5 && p instanceof Pentanomial)
 		{
 			throw new Exception("This is not a pentanomial.");
 		}
@@ -36,6 +36,22 @@ public class Pentanomial extends Trinomial {
 			BigInteger toCompare = it.next();
 			if(last.equals(toCompare)){
 				this.b = beforeLast;
+			}
+			else
+			{
+				beforeLast = toCompare;
+			}
+			
+
+		}
+		
+		it = this.degrees.iterator();
+		beforeLast = BigInteger.ZERO;
+		last = this.getB();
+		while (it.hasNext()) {
+			BigInteger toCompare = it.next();
+			if(last.equals(toCompare)){
+				this.c = beforeLast;
 			}
 			else
 			{

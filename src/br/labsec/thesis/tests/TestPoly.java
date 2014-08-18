@@ -6,7 +6,7 @@ public class TestPoly {
 	public static void main(String[] args) {
 		//Polynomial pa = Trinomial.createFromLong(0x51);
 		
-		Polynomial aa = Polynomial.createFromString("x^3000 + x^3 + 1");
+		Polynomial aa = Polynomial.createFromString("x^3000 + x^100 + 1");
 		
 		System.out.println(aa.toPolynomialString());
 		
