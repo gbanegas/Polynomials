@@ -99,13 +99,21 @@ public class TContMatrix {
 	}
 
 	private void addColums() {
-
+//TODO FINISH!
 		int index_row = findTheRowLessSize();
 		int index_colum = findColum(index_row);
-		int dimmesionOfColumns = this.actual_row;
-		for(int i = 0; i < dimmesionOfColumns;i++ )
+		int dimmesionOfRow = this.actual_row;
+		for(int i = 0; i < dimmesionOfRow;i++ )
 		{
-			
+			double[] rowToGet = this.matrix.getRow(i);
+			if(rowToGet[index_colum] != NULL)
+			{
+				for(int j = 0; j < this.exp.size();j++)
+				{
+					int exp = this.exp.get(0);
+					
+				}
+			}
 		}
 
 	}
