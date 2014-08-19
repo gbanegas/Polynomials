@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.naming.LimitExceededException;
 
@@ -24,28 +26,124 @@ public class TContMatrix {
 	private Trinomial tri;
 	private int max_size;
 	private int max_row;
-	public TContMatrix()
-	{
-		
+	private int actual_row;
+
+	private ArrayList<Integer> exp;
+
+	public TContMatrix() {
+
 	}
-	
-	public int calculate(Trinomial tri){
+
+	public int calculate(Trinomial tri) {
+		actual_row = 1;
 		this.tri = tri;
 		int nr = this.calculateNR();
 		this.max_row = (nr * 3) + 5;
 		this.generateMatrix(nr);
-		
-		
-		
+		this.reduction(nr);
+
 		return 0;
+
+	}
+
+	private void reduction(int nr) {
+		this.firstRow();
+		this.extractExp();
+		int h = 1;
+		for (int j = 0; j < this.exp.size(); j++) {
+			this.mountFirst(this.exp.get(j), h);
+			h++;
+		}
+		this.actual_row = h;
+		for (int i = 1; i < nr; i++) {
+			this.madeOthersReductions(i);
+		}
+
+	}
+
+	private void madeOthersReductions(int actual_nr) {
+		int index_rowToGet = this.actual_row - actual_nr;
+		double[] toReduce = this.matrix.getRow(index_rowToGet);
+		this.mountOthers(toReduce, index_rowToGet);
+	}
+
+	private void mountOthers(double[] toReduce, int index_rowToGet) {
+
+		for (int j = 0; j < this.exp.size(); j++) {
+			int index = this.max_size;
+			ArrayList<Double> elements = new ArrayList<>();
+			double[] toSave = this.matrix.getRow(this.actual_row);
+			for (int i = 0; i < this.tri.degree().intValue()-1; i++) {
+				double reduced = toReduce[i];
+				if (reduced != NULL) {
+					if (reduced >= this.tri.degree().intValue()) {
+						elements.add(toReduce[i]);
+					}
+				}
+			}
+			Collections.sort(elements);
+			for (int i = 0; i < elements.size(); i++) {
+				toSave[index - this.exp.get(j)] = elements.get(i);
+				index--;
+			}
+			
+			this.matrix.setRow(this.actual_row, toSave);
+			
+			
+			this.addColums(index_rowToGet);
+			
+			
+			this.actual_row++;
+		}
+
+	}
+
+	private void addColums(int index_rowToGet) {
 		
+		
+	}
+
+	private void mountFirst(Integer exp, Integer row) {
+		int index = this.max_size;
+		double[] r = this.matrix.getRow(row);
+		ArrayList<Double> elements = new ArrayList<>();
+		for (int i = 0; i < this.tri.degree().intValue() - 1; i++) {
+			double element = this.matrix.getEntry(0, i);
+			elements.add(element);
+
+		}
+		Collections.sort(elements);
+		for (int i = 0; i < elements.size(); i++) {
+			r[index - exp] = elements.get(i);
+			index--;
+		}
+		this.matrix.setRow(row, r);
+
+	}
+
+	private void extractExp() {
+		exp = new ArrayList<>();
+		exp.add(0);
+		exp.add(this.tri.getA().intValue());
+
+		Collections.sort(exp);
+
+	}
+
+	private void firstRow() {
+		int temp = this.max_size;
+		for (int i = 0; i < this.matrix.getColumnDimension(); i++) {
+			this.matrix.setEntry(0, i, temp);
+			temp = temp - 1;
+		}
+
 	}
 
 	private void generateMatrix(int nr) {
 		this.matrix = MatrixUtils.createRealMatrix(this.max_row,
 				this.max_size + 1);
 		this.cleanMatrix();
-		
+
 	}
 
 	private void cleanMatrix() {
@@ -56,7 +154,7 @@ public class TContMatrix {
 		}
 
 	}
-	
+
 	private int calculateNR() {
 		BigInteger bigMaxSize = (this.tri.degree()
 				.multiply(new BigInteger("2"))).subtract(new BigInteger("2"));
@@ -71,6 +169,7 @@ public class TContMatrix {
 		}
 		return nr;
 	}
+
 	public void saveXLS() throws LimitExceededException {
 
 		if (this.matrix.getColumnDimension() <= 16384) {

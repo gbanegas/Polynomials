@@ -5,7 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.naming.LimitExceededException;
 
@@ -39,89 +42,125 @@ public class TrinomialContMatrix implements Runnable {
 	@Override
 	public void run() {
 		int nr = calculateNR();
-		this.max_row = (nr * 3) +5;
-
+		this.max_row = (nr * 3) + 5;
 		this.generateFirstRowAndMatrix();
-
+		// ------------------------------------------------------
 		this.optmize(nr);
 
 	}
 
-	private int calculateNR() {
-		BigInteger bigMaxSize = (this.tri.degree()
-				.multiply(new BigInteger("2"))).subtract(new BigInteger("2"));
-		this.bigMaxSize = bigMaxSize;
-		this.max_size = bigMaxSize.intValue();
-
-		int nr = 2;
-		int deg = (int) Math.floor((this.tri.degree().intValue() + 1) / 2);
-
-		if (this.tri.getA().intValue() > deg) {
-			nr = 2 * (this.tri.getA().intValue() + 1)
-					- this.tri.degree().intValue();
-		}
-		return nr;
-	}
-
-	public int getTotalXor() {
-		return totalXor;
-	}
-
 	private void optmize(int nr) {
 
-		this.reductionBy(0, bigMaxSize);
-		this.reductionBy(this.tri.getA().intValue(), bigMaxSize);
+		firstReduction();
 		nr = nr - 1;
 		for (int i = 0; i < nr; i++) {
-			this.othersReductions(i+1);
+			this.othersReductions(i + 1);
 		}
 
 		this.repeatRemove();
-
 		this.countXor();
 
 	}
 
-	private void countXor() {
-
-		int nextRow = this.m_row + 1;
-		double[] rowToWrite = matrix.getRow(nextRow);
-		double[] row = matrix.getRow(0);
-
-		for (int i = this.tri.degree().intValue() - 1; i < matrix
-				.getColumnDimension(); i++) {
-			int tempXor = 0;
-			double cell = row[i];
-
-			if (cell != NULL) {
-				for (int l = 1; l < this.m_row; l++) {
-					double[] rowToCompare = matrix.getRow(l);
-					double cellToCompare = rowToCompare[i];
-					if (cellToCompare != NULL) {
-						tempXor++;
-					}
+	private void othersReductions(int interaction) {
+		double[] row = matrix.getRow(interaction - 1);
+		double[] rowToReduce = matrix.getRow(interaction + 1);
+		ArrayList<Integer> degreesToReduce = new ArrayList<Integer>();
+		degreesToReduce.add(0);
+		degreesToReduce.add(this.tri.getA().intValue());
+		Collections.sort(degreesToReduce);
+		HashMap<Double, Double> expWhereToSave = new HashMap<Double, Double>();
+		for (int j = 0; j < degreesToReduce.size(); j++) {
+			int exp = degreesToReduce.get(j);
+			for (int i = 0; i < this.tri.degree().intValue(); i++) {
+				if (rowToReduce[i] != -1) {
+					expWhereToSave.put(row[i], rowToReduce[i]);
 				}
 			}
-			rowToWrite[i] = tempXor;
-
+			
+			this.reduce(expWhereToSave, exp);
+			int isNeed =  isNeededColum(interaction + 1);
+			if(isNeed != NULL)
+			{
+				double[] rowTo = matrix.getRow(interaction + 1);
+				addRows(rowTo, isNeed);
+			}
+			this.removeAllRepeated();
+			//this.printMatrix();
 		}
-		matrix.setRow(nextRow, rowToWrite);
+		
+	}
 
-		double[] rowToRead = matrix.getRow(nextRow);
-		int counter = 0;
-		for (int i =this.tri.degree().intValue()-1; i < rowToRead.length;i++) {
-			int tx = (int) rowToRead[i];
-			counter = counter + tx;
+
+	private void addRows(double[] row, int isNeed) {
+		int rowTemp1 = this.defineRow();
+		double[] toWrite = this.matrix.getRow(rowTemp1);
+		double[] toRead = this.matrix.getRow(0);
+		for(int i = isNeed; i < toRead.length;i++)
+		{
+			if(toRead[i] >= this.tri.degree().intValue())
+			{
+				toWrite[i] = toRead[i];
+			}
 		}
-		this.totalXor = counter;
+		 this.matrix.setRow(rowTemp1,toWrite);
+		
+	}
+
+	private int isNeededColum(int rowToGet) {
+		double[] rowToReduce = matrix.getRow(rowToGet);
+		for(int i = 0; i < rowToReduce.length; i++)
+		{
+			double value = rowToReduce[i];
+			if(value != NULL)
+			{
+				if(this.matrix.getRow(0)[i] >= this.tri.degree().intValue())
+				{
+					return i;
+				}
+			}
+		}
+		return (int) NULL;
+	}
+
+	private void reduce(HashMap<Double, Double> expWhereToSave, int exp) {
+
+		int rowTemp1 = this.defineRow();
+		int rowTemp2 = this.defineRow();
+		rowTemp2++;
+
+		double[] rowToWrite = matrix.getRow(rowTemp1);
+		double[] rr = matrix.getRow(rowTemp2);
+		Set<Double> set = expWhereToSave.keySet();
+		int j = this.max_size - exp;
+		ArrayList<Double> keys = new ArrayList<>();
+		ArrayList<Double> values = new ArrayList<>();
+		for (Double key : set) {
+			keys.add(key);
+			values.add(expWhereToSave.get(key));
+		}
+		Collections.sort(keys);
+		Collections.sort(values);
+		for (int h = 0; h < keys.size(); h++) {
+			if (keys.get(h) > this.tri.degree().intValue() - 1) {
+				rowToWrite[j] = keys.get(h);
+				rr[j] = values.get(h);
+				j--;
+			}
+		}
+		this.matrix.setRow(rowTemp1, rowToWrite);
+		this.matrix.setRow(rowTemp2, rr);
+		rowTemp1++;
+		rowTemp2++;
+		this.m_row = rowTemp2;
+		//this.removeAllRepeated();
 
 	}
 
-	private void repeatRemove() {
-
-		for (int j = 0; j < this.m_row; j++) {
+	private void removeAllRepeated() {
+		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
 			double[] row = matrix.getRow(j);
-			for (int i = this.tri.degree().intValue() - 1; i < matrix.getColumnDimension(); i++) {
+			for (int i = 0; i < matrix.getColumnDimension(); i++) {
 
 				double cell = row[i];
 				if (cell != NULL) {
@@ -144,63 +183,22 @@ public class TrinomialContMatrix implements Runnable {
 
 	}
 
-	private void othersReductions(int interaction) {
-		//TODO:refactor the method
-		double[] row = matrix.getRow(interaction-1);
-		double[] rowToReduce = matrix.getRow(interaction+1);
-
-		HashMap<Double, Double> expWhereToSave = new HashMap<Double, Double>();
-		for (int i = 0; i < matrix.getColumnDimension(); i++) {
-			if (row[i] != NULL && rowToReduce[i] != NULL) {
-				boolean validy = (row[i] >= this.tri.degree().doubleValue());
-
-				if (validy) {
-					expWhereToSave.put(row[i], rowToReduce[i]);
-				}
+	private int defineRow() {
+		for (int i = 0; i < this.matrix.getRowDimension(); i++) {
+			double[] row = this.matrix.getRow(i);
+			if (isClean(row)) {
+				return i;
 			}
 		}
-
-		this.mount(expWhereToSave, interaction);
+		return 0;
 	}
 
-	private void mount(HashMap<Double, Double> expWhereToSave, int interaction) {
-		//TODO REFAZERRRR
-		int rowTemp1 = this.m_row;
-		
-		int rowTemp2 = this.m_row+1;
-		Integer size = Integer.valueOf(this.m_row);
-
-		
-		boolean changed = false;
-		for (int i = size-2; i < size; i++) {
-			double[] rowToWrite = matrix.getRow(rowTemp1);
-			double[] rr = matrix.getRow(rowTemp2);
-			double[] row = matrix.getRow(i);
-			int j = 0;
-			for (int h = 0; h < matrix.getColumnDimension(); h++) {
-				double cell = row[h];
-
-				if (cell != NULL) {
-					Double number = (Double) (cell);
-
-					if (expWhereToSave.containsKey(((number)))) {
-						rowToWrite[j] = expWhereToSave.get(number);
-						rr[j] = number;
-						changed = true;
-					}
-				}
-				j++;
-			}
-			if(changed){
-				this.matrix.setRow(rowTemp1, rowToWrite);
-				this.matrix.setRow(rowTemp2, rr);
-				rowTemp1++;
-				rowTemp2++;
-				changed=false;
-			}
+	private boolean isClean(double[] row) {
+		for (int i = 0; i < row.length; i++) {
+			if (row[i] != NULL)
+				return false;
 		}
-		this.m_row = rowTemp2;
-
+		return true;
 	}
 
 	private void reductionBy(int exp, BigInteger max_size) {
@@ -264,7 +262,7 @@ public class TrinomialContMatrix implements Runnable {
 				double n = this.matrix.getEntry(j, i);
 				System.out.print(n + " ");
 			}
-			System.out.println();
+			System.out.println("");
 		}
 
 	}
@@ -280,11 +278,11 @@ public class TrinomialContMatrix implements Runnable {
 				for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
 					Cell cell = row.createCell(j);
 					double value = this.matrix.getEntry(i, j);
-					if(value == NULL)
+					if (value == NULL)
 						cell.setCellType(Cell.CELL_TYPE_BLANK);
 					else
 						cell.setCellValue(value);
-						
+
 				}
 			}
 
@@ -306,6 +304,94 @@ public class TrinomialContMatrix implements Runnable {
 			throw new LimitExceededException(
 					"The size of the columns is too big to create a xls file.");
 		}
+	}
+
+	private void countXor() {
+
+		int nextRow = this.m_row + 1;
+		double[] rowToWrite = matrix.getRow(nextRow);
+		double[] row = matrix.getRow(0);
+
+		for (int i = this.tri.degree().intValue() - 1; i < matrix
+				.getColumnDimension(); i++) {
+			int tempXor = 0;
+			double cell = row[i];
+
+			if (cell != NULL) {
+				for (int l = 1; l < this.m_row; l++) {
+					double[] rowToCompare = matrix.getRow(l);
+					double cellToCompare = rowToCompare[i];
+					if (cellToCompare != NULL) {
+						tempXor++;
+					}
+				}
+			}
+			rowToWrite[i] = tempXor;
+
+		}
+		matrix.setRow(nextRow, rowToWrite);
+
+		double[] rowToRead = matrix.getRow(nextRow);
+		int counter = 0;
+		for (int i = this.tri.degree().intValue() - 1; i < rowToRead.length; i++) {
+			int tx = (int) rowToRead[i];
+			counter = counter + tx;
+		}
+		this.totalXor = counter;
+
+	}
+
+	private void repeatRemove() {
+
+		for (int j = 0; j < this.m_row; j++) {
+			double[] row = matrix.getRow(j);
+			for (int i = this.tri.degree().intValue() - 1; i < matrix
+					.getColumnDimension(); i++) {
+
+				double cell = row[i];
+				if (cell != NULL) {
+					for (int l = j + 1; l < this.m_row; l++) {
+						double[] rowToCompare = matrix.getRow(l);
+						double cellToCompare = rowToCompare[i];
+						if (cellToCompare != NULL) {
+							if (cellToCompare == cell) {
+								rowToCompare[i] = NULL;
+								row[i] = NULL;
+							}
+						}
+						matrix.setRow(l, rowToCompare);
+					}
+				}
+
+			}
+			matrix.setRow(j, row);
+		}
+
+	}
+
+	private int calculateNR() {
+		BigInteger bigMaxSize = (this.tri.degree()
+				.multiply(new BigInteger("2"))).subtract(new BigInteger("2"));
+		this.bigMaxSize = bigMaxSize;
+		this.max_size = bigMaxSize.intValue();
+
+		int nr = 2;
+		int deg = (int) Math.floor((this.tri.degree().intValue() + 1) / 2);
+
+		if (this.tri.getA().intValue() > deg) {
+			nr = 2 * (this.tri.getA().intValue() + 1)
+					- this.tri.degree().intValue();
+		}
+		return nr;
+	}
+
+	private void firstReduction() {
+		this.reductionBy(0, bigMaxSize);
+		this.reductionBy(this.tri.getA().intValue(), bigMaxSize);
+	}
+
+	public int getTotalXor() {
+		return totalXor;
 	}
 
 	private void setfName(String fileName) {
