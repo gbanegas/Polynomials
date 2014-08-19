@@ -58,6 +58,7 @@ public class TContMatrix {
 		for (int i = 1; i < nr; i++) {
 			this.madeOthersReductions(i);
 		}
+		this.addColums();
 
 	}
 
@@ -73,7 +74,7 @@ public class TContMatrix {
 			int index = this.max_size;
 			ArrayList<Double> elements = new ArrayList<>();
 			double[] toSave = this.matrix.getRow(this.actual_row);
-			for (int i = 0; i < this.tri.degree().intValue()-1; i++) {
+			for (int i = 0; i < this.tri.degree().intValue() - 1; i++) {
 				double reduced = toReduce[i];
 				if (reduced != NULL) {
 					if (reduced >= this.tri.degree().intValue()) {
@@ -86,21 +87,66 @@ public class TContMatrix {
 				toSave[index - this.exp.get(j)] = elements.get(i);
 				index--;
 			}
-			
+
 			this.matrix.setRow(this.actual_row, toSave);
-			
-			
-			this.addColums(index_rowToGet);
-			
-			
 			this.actual_row++;
+			
+
+			
+		}
+		
+
+	}
+
+	private void addColums() {
+
+		int index_row = findTheRowLessSize();
+		int index_colum = findColum(index_row);
+		int dimmesionOfColumns = this.actual_row;
+		for(int i = 0; i < dimmesionOfColumns;i++ )
+		{
+			
 		}
 
 	}
 
-	private void addColums(int index_rowToGet) {
-		
-		
+	private int findColum(int index_row) {
+		double[] row = this.matrix.getRow(index_row);
+		for(int i =0; i < this.tri.degree().intValue()-1;i++)
+		{
+			double element = row[i];
+			if(element != NULL)
+			{
+				return i;
+			}
+		}
+		return (int)NULL;
+	}
+
+	private int findTheRowLessSize() {
+		int r = -1;
+		int temp = 99999999;
+		for (int i = this.actual_row; i > 0; i--) {
+			double[] row = this.matrix.getRow(i);
+			int count = 0;
+			boolean isAllNull = true;
+			for (int j = 0; j < this.tri.degree().intValue() - 1; j++) {
+				double element = row[j];
+				if (element != NULL) {
+					count++;
+					isAllNull = false;
+				}
+			}
+			if (!isAllNull) {
+				if (count < temp) {
+					r = i;
+					temp = count;
+				}
+				isAllNull = true;
+			}
+
+		}
+		return r;
 	}
 
 	private void mountFirst(Integer exp, Integer row) {
