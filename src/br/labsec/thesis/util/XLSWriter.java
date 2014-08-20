@@ -45,6 +45,7 @@ public class XLSWriter {
 			FileOutputStream out = new FileOutputStream(new File(fileName));
 			workbook.write(out);
 			out.close();
+			
 			System.out.println("Excel written successfully..");
 
 		} catch (FileNotFoundException e) {
