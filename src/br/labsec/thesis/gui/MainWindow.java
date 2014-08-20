@@ -221,8 +221,6 @@ public class MainWindow extends javax.swing.JFrame {
 			} catch (SizeLimitExceededException ex) {
 				text = text + ex.getMessage()+ "\n";
 			}
-
-			tri.run();
 			if (tri.isIrreducible()) {
 				text = text + "The Polynomial is irreducible.";
 			} else {

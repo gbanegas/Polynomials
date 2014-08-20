@@ -10,9 +10,8 @@ import java.util.TreeSet;
  * 
  * Supports standard arithmetic in the field, as well as reducibility tests.
  */
-public class Polynomial extends Thread implements Comparable<Polynomial> {
+public class Polynomial implements Comparable<Polynomial> {
 	
-	private boolean isIrreducible;
 
 	/** number of elements in the finite field GF(2^k) */
 	public static final BigInteger Q = BigInteger.valueOf(2L);
@@ -31,14 +30,9 @@ public class Polynomial extends Thread implements Comparable<Polynomial> {
 		}
 	}
 	
-	@Override
-	public void run()
-	{
-		this.isIrreducible = this.isIReducible();
-	}
 
 	public boolean isIrreducible() {
-		return isIrreducible;
+		return this.isIReducible();
 	}
 
 	/**

@@ -19,7 +19,7 @@ public class TestOtimizationTrinomial {
 			cont.saveXLS();*/
 			
 			tri_2 = new Trinomial(Polynomial.createFromString("x^233+x^159+x^0"));
-			//System.out.println(tri_2.isIrreducible());
+			System.out.println(tri_2.isIrreducible());
 			System.out.println(tri_2.toPolynomialString());
 			System.out.println(cont.calculate(tri_2));
 			cont.saveXLS();
