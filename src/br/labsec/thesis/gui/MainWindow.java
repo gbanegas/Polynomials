@@ -53,7 +53,7 @@ public class MainWindow extends javax.swing.JFrame {
 
 		jLabel1.setText("Polynomial:");
 
-		jTextField1.setText("x^m+...+x^0");
+		jTextField1.setText("x^m+x^a+x^0");
 
 		jTextArea1.setColumns(20);
 		jTextArea1.setRows(5);
