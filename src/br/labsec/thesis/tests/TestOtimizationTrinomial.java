@@ -7,7 +7,6 @@ import br.labsec.thesis.polynomials.Trinomial;
 public class TestOtimizationTrinomial {
 
 	public static void main(String[] args) {
-		Trinomial tri;
 		Trinomial tri_2;
 		Trinomial tri_3;
 		try {
@@ -25,7 +24,7 @@ public class TestOtimizationTrinomial {
 			System.out.println(cont.calculate(tri_2));
 			cont.saveXLS();
 			
-			tri_3 = new Trinomial(Polynomial.createFromString("x^233 +x^74+x^0"));
+			tri_3 = new Trinomial(Polynomial.createFromString("x^1255 +x^74+x^0"));
 			//System.out.println(tri_3.isIrreducible());
 			System.out.println(tri_3.toPolynomialString());
 			System.out.println(cont.calculate(tri_3));
