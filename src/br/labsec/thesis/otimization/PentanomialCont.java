@@ -60,7 +60,6 @@ public class PentanomialCont {
 		for (int i = 1; i < nr; i++) {
 			this.madeOthersReductions(i);
 		}
-		if(nr > 2)
 			this.addColums();
 
 	}

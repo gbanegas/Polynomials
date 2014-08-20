@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Sun Aug 17 10:23:55 BRT 2014
+#Tue Aug 19 22:54:45 BRT 2014
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
@@ -10,5 +10,5 @@ manifest.mainclass=br.labsec.thesis.gui.MainWindow
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=
+excludes=<jar|junit.jar>;<jar|org.hamcrest.core_1.3.0.v201303031735.jar>
 includes=

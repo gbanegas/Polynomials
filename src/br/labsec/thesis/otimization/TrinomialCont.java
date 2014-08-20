@@ -313,23 +313,26 @@ public class TrinomialCont {
 
 	public void saveXLS() throws LimitExceededException {
 
+		this.clean();
 		if (this.matrix.getColumnDimension() <= 16384) {
 			HSSFWorkbook workbook = new HSSFWorkbook();
 			HSSFSheet sheet = workbook.createSheet("Sheet_1");
 
 			for (int i = 0; i < this.matrix.getRowDimension(); i++) {
 				Row row = sheet.createRow(i);
-				for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
-					Cell cell = row.createCell(j);
+				int h = 0;
+				for (int j = this.tri.degree().intValue()-1; j < this.matrix.getColumnDimension(); j++) {
+					Cell cell = row.createCell(h);
 					double value = this.matrix.getEntry(i, j);
 					if (value == NULL)
 						cell.setCellType(Cell.CELL_TYPE_BLANK);
 					else
 						cell.setCellValue(value);
-
+					h++;
 				}
 			}
 
+			
 			try {
 				String fileName = "Reduction_" + this.tri.degree().toString()
 						+ "_" + this.tri.getA().toString() + ".xls";
@@ -348,6 +351,33 @@ public class TrinomialCont {
 			throw new LimitExceededException(
 					"The size of the columns is too big to create a xls file.");
 		}
+	}
+
+	private void clean() {
+		boolean isNeedToClean = this.isNeedToClean();
+		
+		if(isNeedToClean)
+		{
+			
+		}
+	}
+
+	private boolean isNeedToClean() {
+		for(int i = 1; i < this.matrix.getRowDimension(); i++)
+		{
+			double[] row = this.matrix.getRow(i);
+			boolean clean = this.isCleanRow(row);
+		}
+		return false;
+	}
+
+	private boolean isCleanRow(double[] row) {
+		for(int i = 0; i < row.length; i++)
+		{
+			if(row[i] != NULL)
+				return false;
+		}
+		return true;
 	}
 
 	public void printMatrix() {
