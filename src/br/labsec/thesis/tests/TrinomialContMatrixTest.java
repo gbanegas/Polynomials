@@ -11,23 +11,13 @@ import br.labsec.thesis.polynomials.Polynomial;
 import br.labsec.thesis.polynomials.Trinomial;
 
 public class TrinomialContMatrixTest {
-	private Trinomial tri;
-	private Trinomial tri_1;
-	private Trinomial tri_2;
-
 	private TrinomialCont cont;
-	private TrinomialCont cont_1;
-	private TrinomialCont cont_2;
 
 	@Before
-	public void setUp() throws Exception {
-		tri = new Trinomial(Polynomial.createFromString("x^17+x^1+x^0"));
-		tri_1 = new Trinomial(Polynomial.createFromString("x^17+x^3+x^0"));
-		tri_2 = new Trinomial(Polynomial.createFromString("x^17+x^10+x^0"));
+	public void setUp(){
+		
 
 		cont = new TrinomialCont();
-		cont_1 = new TrinomialCont();
-		cont_2 = new TrinomialCont();
 		
 	}
 
@@ -36,11 +26,26 @@ public class TrinomialContMatrixTest {
 	}
 
 	@Test
-	public void testGetTotalXor() {
+	public void testGetTotalXor() throws Exception {
+		Trinomial tri = new Trinomial(Polynomial.createFromString("x^17+x^1+x^0"));
+		Trinomial tri_1 = new Trinomial(Polynomial.createFromString("x^17+x^3+x^0"));
+		Trinomial tri_2 = new Trinomial(Polynomial.createFromString("x^17+x^10+x^0"));
 		
 		assertEquals(cont.calculate(tri),32);
-		assertEquals(cont_1.calculate(tri_1), 30);
-		assertEquals(cont_2.calculate(tri_2),31);		
+		assertEquals(cont.calculate(tri_1), 30);
+		assertEquals(cont.calculate(tri_2),31);	
+		
+		Trinomial tri_3 = new Trinomial(Polynomial.createFromString("x^171+x^1+x^0"));
+		Trinomial tri_4 = new Trinomial(Polynomial.createFromString("x^171+x^30+x^0"));
+		Trinomial tri_5 = new Trinomial(Polynomial.createFromString("x^171+x^88+x^0"));
+		int t = tri_3.degree().intValue();
+		assertEquals(cont.calculate(tri_3),(2*t)-2);	
+		//System.out.println(cont.calculate(tri_4));
+		assertEquals(cont.calculate(tri_4),(2*t)-tri_4.getA().intValue() - 1);
+		assertEquals(cont.calculate(tri_5),(7*tri_5.getA().intValue()) - (2*t) - 5);
+		
+		
 	}
+	
 
 }
