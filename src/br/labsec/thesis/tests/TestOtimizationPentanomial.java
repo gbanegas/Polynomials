@@ -16,10 +16,10 @@ public class TestOtimizationPentanomial {
 			System.out.println(pent.getB());
 			System.out.println(pent.getC());
 			
-			PentanomialCont cont = new PentanomialCont(pent);
-			cont.run();
+			PentanomialCont cont = new PentanomialCont();
+			System.out.println(cont.calculate(pent));
 			cont.saveXLS();
-			System.out.println(cont.getTotalXor());
+			
 			//cont.saveXLS();
 		//	TrinomialContXor cont = new TrinomialContXor(tri);
 		} catch (Exception e) {
