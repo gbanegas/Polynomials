@@ -19,7 +19,7 @@ import org.apache.poi.ss.usermodel.Row;
 
 import br.labsec.thesis.polynomials.Trinomial;
 
-public class TContMatrix {
+public class TrinomialCont {
 
 	private static final double NULL = -1;
 	private RealMatrix matrix;
@@ -29,8 +29,9 @@ public class TContMatrix {
 	private int actual_row;
 
 	private ArrayList<Integer> exp;
+	private String fileName;
 
-	public TContMatrix() {
+	public TrinomialCont() {
 
 	}
 
@@ -333,6 +334,7 @@ public class TContMatrix {
 				String fileName = "Reduction_" + this.tri.degree().toString()
 						+ "_" + this.tri.getA().toString() + ".xls";
 				FileOutputStream out = new FileOutputStream(new File(fileName));
+				this.fileName = fileName;
 				workbook.write(out);
 				out.close();
 				System.out.println("Excel written successfully..");
@@ -358,5 +360,10 @@ public class TContMatrix {
 			System.out.println("");
 		}
 
+	}
+
+	public String getFileName() {
+		// TODO Auto-generated method stub
+		return fileName;
 	}
 }

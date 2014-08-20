@@ -1,6 +1,6 @@
 package br.labsec.thesis.tests;
 
-import br.labsec.thesis.otimization.PentanomialContMatrix;
+import br.labsec.thesis.otimization.PentanomialCont;
 import br.labsec.thesis.polynomials.Pentanomial;
 import br.labsec.thesis.polynomials.Polynomial;
 
@@ -16,7 +16,7 @@ public class TestOtimizationPentanomial {
 			System.out.println(pent.getB());
 			System.out.println(pent.getC());
 			
-			PentanomialContMatrix cont = new PentanomialContMatrix(pent);
+			PentanomialCont cont = new PentanomialCont(pent);
 			cont.run();
 			cont.saveXLS();
 			System.out.println(cont.getTotalXor());

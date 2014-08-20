@@ -16,12 +16,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
-import br.labsec.thesis.polynomials.Trinomial;
+import br.labsec.thesis.polynomials.Pentanomial;
 
-public class CopyOfTrinomialContMatrix implements Runnable {
-
+public class PentanomialCont implements Runnable {
 	private static final double NULL = -1.0;
-	private Trinomial tri;
+	private Pentanomial pent;
 	private int max_size;
 	private int max_row;
 	private BigInteger bigMaxSize;
@@ -31,148 +30,67 @@ public class CopyOfTrinomialContMatrix implements Runnable {
 	private int totalXor;
 	private String fName;
 
-	public CopyOfTrinomialContMatrix(Trinomial toCalculate) {
-		this.tri = toCalculate;
+	public PentanomialCont(Pentanomial pent) {
+		this.pent = pent;
 		this.m_row = 1;
 	}
 
 	@Override
 	public void run() {
-		int nr = calculateNR();
-		this.max_row = (nr * 3) +5;
-
-		this.generateFirstRowAndMatrix();
-
+		int nr = this.calculateNR();
+		this.max_row = (nr * 5) + 5;
+		this.generateMatrix();
 		this.optmize(nr);
+		this.printMatrix();
 
-	}
-
-	private int calculateNR() {
-		BigInteger bigMaxSize = (this.tri.degree()
-				.multiply(new BigInteger("2"))).subtract(new BigInteger("2"));
-		this.bigMaxSize = bigMaxSize;
-		this.max_size = bigMaxSize.intValue();
-
-		int nr = 2;
-		int deg = (int) Math.floor((this.tri.degree().intValue() + 1) / 2);
-
-		if (this.tri.getA().intValue() > deg) {
-			nr = 2 * (this.tri.getA().intValue() + 1)
-					- this.tri.degree().intValue();
-		}
-		return nr;
-	}
-
-	public int getTotalXor() {
-		return totalXor;
 	}
 
 	private void optmize(int nr) {
 
-		this.reductionBy(0, bigMaxSize);
-		this.reductionBy(this.tri.getA().intValue(), bigMaxSize);
+		firtsReduction();
 		nr = nr - 1;
+
 		for (int i = 0; i < nr; i++) {
-			this.othersReductions(i+1);
-		}
-
-		this.repeatRemove();
-
-		this.countXor();
-
-	}
-
-	private void countXor() {
-
-		int nextRow = this.m_row + 1;
-		double[] rowToWrite = matrix.getRow(nextRow);
-		double[] row = matrix.getRow(0);
-
-		for (int i = this.tri.degree().intValue() - 1; i < matrix
-				.getColumnDimension(); i++) {
-			int tempXor = 0;
-			double cell = row[i];
-
-			if (cell != NULL) {
-				for (int l = 1; l < this.m_row; l++) {
-					double[] rowToCompare = matrix.getRow(l);
-					double cellToCompare = rowToCompare[i];
-					if (cellToCompare != NULL) {
-						tempXor++;
-					}
-				}
-			}
-			rowToWrite[i] = tempXor;
-
-		}
-		matrix.setRow(nextRow, rowToWrite);
-
-		double[] rowToRead = matrix.getRow(nextRow);
-		int counter = 0;
-		for (double xo : rowToRead) {
-			int tx = (int) xo;
-			counter = counter + tx;
-		}
-		this.totalXor = counter;
-
-	}
-
-	private void repeatRemove() {
-
-		for (int j = 0; j < this.m_row; j++) {
-			double[] row = matrix.getRow(j);
-			for (int i = this.tri.degree().intValue() - 1; i < matrix.getColumnDimension(); i++) {
-
-				double cell = row[i];
-				if (cell != NULL) {
-					for (int l = j + 1; l < this.m_row; l++) {
-						double[] rowToCompare = matrix.getRow(l);
-						double cellToCompare = rowToCompare[i];
-						if (cellToCompare != NULL) {
-							if (cellToCompare == cell) {
-								rowToCompare[i] = NULL;
-								row[i] = NULL;
-							}
-						}
-						matrix.setRow(l, rowToCompare);
-					}
-				}
-
-			}
-			matrix.setRow(j, row);
+			this.othersReductions(i + 1);
 		}
 
 	}
 
 	private void othersReductions(int interaction) {
-		//TODO:refactor the method
-		double[] row = matrix.getRow(interaction-1);
-		double[] rowToReduce = matrix.getRow(interaction+1);
-
+		// TODO:refactor the method
+		int temp = interaction;
 		HashMap<Double, Double> expWhereToSave = new HashMap<Double, Double>();
-		for (int i = 0; i < matrix.getColumnDimension(); i++) {
-			if (row[i] != NULL && rowToReduce[i] != NULL) {
-				boolean validy = (row[i] >= this.tri.degree().doubleValue());
+		for (int j = 1; j < 4; j++) {
+			double[] row = matrix.getRow(temp - 1);
+			double[] rowToReduce = matrix.getRow(temp + 2);
 
-				if (validy) {
-					expWhereToSave.put(row[i], rowToReduce[i]);
+			
+			for (int i = 0; i < matrix.getColumnDimension(); i++) {
+
+				double r1 = row[i];
+				double r2 = rowToReduce[i];
+				if (r1 != NULL && r2 != NULL) {
+					boolean validy = (r1 >= this.pent.degree().doubleValue());
+
+					if (validy) {
+						expWhereToSave.put(r1, r2);
+					}
 				}
 			}
+			temp++;
 		}
 
 		this.mount(expWhereToSave, interaction);
+	
+
 	}
 
 	private void mount(HashMap<Double, Double> expWhereToSave, int interaction) {
-		int rowTemp1 = this.m_row;
+		int row_temp = this.m_row;
 		Integer size = Integer.valueOf(this.m_row);
-		int rowTemp2 = this.m_row + 1;
-
-		
 		boolean changed = false;
-		for (int i = size-2; i < size; i++) {
-			double[] rowToWrite = matrix.getRow(rowTemp2);
-			double[] rr = new double[rowToWrite.length];
+		for (int i = size - 2; i < size; i++) {
+			double[] rowToWrite = matrix.getRow(row_temp);
 			double[] row = matrix.getRow(i);
 			int j = 0;
 			for (int h = 0; h < matrix.getColumnDimension(); h++) {
@@ -181,36 +99,62 @@ public class CopyOfTrinomialContMatrix implements Runnable {
 				if (cell != NULL) {
 					Double number = (Double) (cell);
 
-					if (expWhereToSave.containsKey(((number)))) {
-						rr[j] = number;
+					if (expWhereToSave.containsKey(number)) {
 						rowToWrite[j] = expWhereToSave.get(number);
 						changed = true;
 					}
 				}
 				j++;
 			}
-			if(changed){
-				this.matrix.setRow(rowTemp2, rowToWrite);
-				this.matrix.setRow(rowTemp1, rr);
-				rowTemp2++;
-				rowTemp1++;
-				changed=false;
+			if (changed) {
+				this.matrix.setRow(row_temp, rowToWrite);
+				row_temp++;
+				changed = false;
 			}
 		}
-		this.m_row = rowTemp2;
+		this.m_row = row_temp;
 
 	}
 
+	private boolean needToWrite(double[] rr, int row_temp) {
+		double[] temp = this.matrix.getRow(row_temp);
+		for (int i = 0; i < rr.length; i++) {
+			Double ri = rr[i];
+			for (int j = 0; j < temp.length; j++) {
+				Double re = temp[j];
+				if (re.equals(ri)) {
+					return false;
+				}
+			}
+
+		}
+		return true;
+	}
+
+	private void clean(double[] rr) {
+		for (int i = 0; i < rr.length; i++) {
+			rr[i] = NULL;
+		}
+
+	}
+
+	private void firtsReduction() {
+		this.reductionBy(0, bigMaxSize);
+		this.reductionBy(this.pent.getA().intValue(), bigMaxSize);
+		this.reductionBy(this.pent.getB().intValue(), bigMaxSize);
+		this.reductionBy(this.pent.getC().intValue(), bigMaxSize);
+	}
+
 	private void reductionBy(int exp, BigInteger max_size) {
-		BigInteger counter = this.tri.degree();
+		BigInteger counter = this.pent.degree();
 		HashMap<BigInteger, BigInteger> expWhereToSave = new HashMap<BigInteger, BigInteger>();
 		BigInteger t = max_size.add(BigInteger.ONE);
-		int m_1 = this.tri.degree().intValue();
+		int m_1 = this.pent.degree().intValue();
 		BigInteger m1 = new BigInteger(Integer.toString(m_1));
 
 		BigInteger realKey = max_size;
 		while (counter.compareTo(t) == -1) {
-			BigInteger toPlace = (counter.subtract(this.tri.degree()))
+			BigInteger toPlace = (counter.subtract(this.pent.degree()))
 					.add(new BigInteger(Integer.toString(exp)));
 			toPlace = toPlace.add(m1.subtract(new BigInteger(Integer
 					.toString(exp)).multiply(new BigInteger("2"))));
@@ -234,7 +178,23 @@ public class CopyOfTrinomialContMatrix implements Runnable {
 
 	}
 
-	private void generateFirstRowAndMatrix() {
+	private int calculateNR() {
+		BigInteger bigMaxSize = (this.pent.degree()
+				.multiply(new BigInteger("2"))).subtract(new BigInteger("2"));
+		this.bigMaxSize = bigMaxSize;
+		this.max_size = bigMaxSize.intValue();
+
+		int nr = 2;
+		int deg = (int) Math.floor((this.pent.degree().intValue() + 1) / 2);
+
+		if (this.pent.getC().intValue() > deg) {
+			nr = 2 * (this.pent.getC().intValue() + 1)
+					- this.pent.degree().intValue();
+		}
+		return nr;
+	}
+
+	private void generateMatrix() {
 		this.matrix = MatrixUtils.createRealMatrix(this.max_row,
 				this.max_size + 1);
 		this.cleanMatrix();
@@ -243,7 +203,6 @@ public class CopyOfTrinomialContMatrix implements Runnable {
 			this.matrix.setEntry(0, i, temp);
 			temp = temp - 1;
 		}
-
 	}
 
 	private void cleanMatrix() {
@@ -267,6 +226,22 @@ public class CopyOfTrinomialContMatrix implements Runnable {
 
 	}
 
+	public Pentanomial getPent() {
+		return pent;
+	}
+
+	public BigInteger getBigMaxSize() {
+		return bigMaxSize;
+	}
+
+	public int getTotalXor() {
+		return totalXor;
+	}
+
+	public String getfName() {
+		return fName;
+	}
+
 	public void saveXLS() throws LimitExceededException {
 
 		if (this.matrix.getColumnDimension() <= 16384) {
@@ -278,21 +253,21 @@ public class CopyOfTrinomialContMatrix implements Runnable {
 				for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
 					Cell cell = row.createCell(j);
 					double value = this.matrix.getEntry(i, j);
-					if(value == NULL)
+					if (value == NULL)
 						cell.setCellType(Cell.CELL_TYPE_BLANK);
 					else
 						cell.setCellValue(value);
-						
+
 				}
 			}
 
 			try {
-				String fileName = "Reduction_" + this.tri.degree().toString()
-						+ "_" + this.tri.getA().toString() + ".xls";
+				String fileName = "Reduction_" + this.pent.degree().toString()
+						+ "_" + pent.getC() + "_" + pent.getB() + "_"
+						+ this.pent.getA().toString() + ".xls";
 				FileOutputStream out = new FileOutputStream(new File(fileName));
 				workbook.write(out);
 				out.close();
-				this.setfName(fileName);
 				System.out.println("Excel written successfully..");
 
 			} catch (FileNotFoundException e) {
@@ -304,15 +279,6 @@ public class CopyOfTrinomialContMatrix implements Runnable {
 			throw new LimitExceededException(
 					"The size of the columns is too big to create a xls file.");
 		}
-	}
-
-	private void setfName(String fileName) {
-		this.fName = fileName;
-
-	}
-
-	public String getFileName() {
-		return this.fName;
 	}
 
 }

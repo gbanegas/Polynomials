@@ -1,6 +1,6 @@
 package br.labsec.thesis.tests;
 
-import br.labsec.thesis.otimization.TContMatrix;
+import br.labsec.thesis.otimization.TrinomialCont;
 import br.labsec.thesis.polynomials.Polynomial;
 import br.labsec.thesis.polynomials.Trinomial;
 
@@ -13,7 +13,7 @@ public class TestOtimizationTrinomial {
 			tri = new Trinomial(Polynomial.createFromString("x^17+x^10+x^0"));
 			System.out.println(tri.isIrreducible());
 			System.out.println(tri.toPolynomialString());
-			TContMatrix cont = new TContMatrix();
+			TrinomialCont cont = new TrinomialCont();
 			System.out.println(cont.calculate(tri));
 			cont.saveXLS();
 			

@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.naming.SizeLimitExceededException;
 
-import br.labsec.thesis.otimization.TrinomialContMatrix;
+import br.labsec.thesis.otimization.TrinomialCont;
 import br.labsec.thesis.polynomials.Polynomial;
 import br.labsec.thesis.polynomials.Trinomial;
 
@@ -209,9 +209,8 @@ public class MainWindow extends javax.swing.JFrame {
 			// ProgressBarGUI tb = new ProgressBarGUI();
 			// tb.setVisible(true);
 			// tb.startProcessing();
-			TrinomialContMatrix cont = new TrinomialContMatrix(tri);
-			cont.run();
-			int totalXor = cont.getTotalXor();
+			TrinomialCont cont = new TrinomialCont();
+			int totalXor = cont.calculate(tri);
 			this.jTextField3.setText("" + totalXor);
 			String text = "The polynomial " + tri.toPolynomialString() + "\n";
 
