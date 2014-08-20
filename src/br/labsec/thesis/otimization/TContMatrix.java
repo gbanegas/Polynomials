@@ -38,12 +38,13 @@ public class TContMatrix {
 		actual_row = 1;
 		this.tri = tri;
 		int nr = this.calculateNR();
-		this.max_row = (nr * 3) + 5;
+		this.max_row = (nr * 6) + 5;
 		this.generateMatrix(nr);
 		this.reduction(nr);
 
-		return 0;
+		this.repeatRemove();
 
+		return countXor();
 	}
 
 	private void reduction(int nr) {
@@ -58,7 +59,76 @@ public class TContMatrix {
 		for (int i = 1; i < nr; i++) {
 			this.madeOthersReductions(i);
 		}
-		this.addColums();
+		if(nr > 2)
+			this.addColums();
+
+	}
+
+	private int countXor() {
+
+		int nextRow = this.actual_row + 1;
+		double[] rowToWrite = matrix.getRow(nextRow);
+		double[] row = matrix.getRow(0);
+		for (int i = this.tri.degree().intValue() - 1; i < matrix
+				.getColumnDimension(); i++) {
+			int tempXor = 0;
+			double cell = row[i];
+
+			if (cell != NULL) {
+				for (int l = 1; l < this.actual_row; l++) {
+					double[] rowToCompare = matrix.getRow(l);
+					double cellToCompare = rowToCompare[i];
+					if (cellToCompare != NULL) {
+						tempXor++;
+					}
+				}
+			}
+			rowToWrite[i] = tempXor;
+
+		}
+		matrix.setRow(nextRow, rowToWrite);
+
+		double[] rowToRead = matrix.getRow(nextRow);
+		int counter = 0;
+		for (int i = this.tri.degree().intValue() - 1; i < rowToRead.length; i++) {
+			int tx = (int) rowToRead[i];
+			counter = counter + tx;
+		}
+		return counter;
+
+	}
+
+
+	private void repeatRemove() {
+
+		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
+			double[] row = matrix.getRow(j);
+			for (int i = this.tri.degree().intValue() - 1; i < matrix
+					.getColumnDimension(); i++) {
+
+				double cell = row[i];
+				boolean found = false;
+				if (cell != NULL) {
+					for (int l = j + 1; l < this.max_row; l++) {
+						double[] rowToCompare = matrix.getRow(l);
+						double cellToCompare = rowToCompare[i];
+						if (cellToCompare != NULL) {
+							if (cellToCompare == cell) {
+								rowToCompare[i] = NULL;
+								row[i] = NULL;
+								found = true;
+							}
+						}
+						
+						matrix.setRow(l, rowToCompare);
+						if(found)
+							break;
+					}
+				}
+			}
+			this.matrix.setRow(j, row);
+
+		}
 
 	}
 
@@ -70,65 +140,82 @@ public class TContMatrix {
 
 	private void mountOthers(double[] toReduce, int index_rowToGet) {
 
+		int temp = this.actual_row + 1;
 		for (int j = 0; j < this.exp.size(); j++) {
 			int index = this.max_size;
 			ArrayList<Double> elements = new ArrayList<>();
+			ArrayList<Double> elements_2 = new ArrayList<>();
 			double[] toSave = this.matrix.getRow(this.actual_row);
+			double[] toSave_2 = this.matrix.getRow(temp);
+
 			for (int i = 0; i < this.tri.degree().intValue() - 1; i++) {
 				double reduced = toReduce[i];
 				if (reduced != NULL) {
 					if (reduced >= this.tri.degree().intValue()) {
+						elements_2
+								.add(this.matrix.getRow(index_rowToGet - 2)[i]);
 						elements.add(toReduce[i]);
+
 					}
 				}
 			}
 			Collections.sort(elements);
+			Collections.sort(elements_2);
 			for (int i = 0; i < elements.size(); i++) {
 				toSave[index - this.exp.get(j)] = elements.get(i);
+				toSave_2[index - this.exp.get(j)] = elements_2.get(i);
 				index--;
 			}
 
 			this.matrix.setRow(this.actual_row, toSave);
-			this.actual_row++;
-			
-
-			
+			this.matrix.setRow(temp, toSave_2);
+			temp++;
+			this.actual_row = temp + 1;
 		}
-		
+		this.actual_row++;
 
 	}
 
 	private void addColums() {
-//TODO FINISH!
 		int index_row = findTheRowLessSize();
 		int index_colum = findColum(index_row);
-		int dimmesionOfRow = this.actual_row;
-		for(int i = 0; i < dimmesionOfRow;i++ )
-		{
+		for (int i = 0; i < index_row; i++) {
 			double[] rowToGet = this.matrix.getRow(i);
-			if(rowToGet[index_colum] != NULL)
-			{
-				for(int j = 0; j < this.exp.size();j++)
-				{
-					int exp = this.exp.get(0);
-					
+			if (rowToGet[index_colum] != NULL) {
+				ArrayList<Double> elements = new ArrayList<>();
+
+				for (int j = index_colum; j < this.tri.degree().intValue() - 1; j++) {
+					elements.add(rowToGet[j]);
+				}
+
+				Collections.sort(elements);
+
+				for (int j = 0; j < this.exp.size(); j++) {
+					int index = this.max_size;
+					double[] toSave = this.matrix.getRow(this.actual_row);
+					for (int h = 0; h < elements.size(); h++) {
+						toSave[index - this.exp.get(j)] = elements.get(h);
+						index--;
+					}
+
+					this.matrix.setRow(this.actual_row, toSave);
+					this.actual_row++;
 				}
 			}
 		}
+		// this.printMatrix();
 
 	}
 
 	private int findColum(int index_row) {
 		double[] row = this.matrix.getRow(index_row);
-		for(int i =0; i < this.tri.degree().intValue()-1;i++)
-		{
+		for (int i = 0; i < this.tri.degree().intValue() - 1; i++) {
 			double element = row[i];
-			if(element != NULL)
-			{
+			if (element != NULL) {
 				return i;
 			}
 		}
-		return (int)NULL;
+		return (int) NULL;
 	}
 
 	private int findTheRowLessSize() {
@@ -194,8 +281,7 @@ public class TContMatrix {
 	}
 
 	private void generateMatrix(int nr) {
-		this.matrix = MatrixUtils.createRealMatrix(this.max_row,
-				this.max_size + 1);
+		this.matrix = MatrixUtils.createRealMatrix(this.max_row,this.max_size + 1);
 		this.cleanMatrix();
 
 	}
@@ -260,5 +346,17 @@ public class TContMatrix {
 			throw new LimitExceededException(
 					"The size of the columns is too big to create a xls file.");
 		}
+	}
+
+	public void printMatrix() {
+		System.out.println();
+		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
+			for (int i = 0; i < this.matrix.getColumnDimension(); i++) {
+				double n = this.matrix.getEntry(j, i);
+				System.out.print(n + " ");
+			}
+			System.out.println("");
+		}
+
 	}
 }

@@ -8,6 +8,7 @@ public class TestOtimizationTrinomial {
 
 	public static void main(String[] args) {
 		Trinomial tri;
+		Trinomial tri_2;
 		try {
 			tri = new Trinomial(Polynomial.createFromString("x^17+x^10+x^0"));
 			System.out.println(tri.isIrreducible());
@@ -16,13 +17,11 @@ public class TestOtimizationTrinomial {
 			System.out.println(cont.calculate(tri));
 			cont.saveXLS();
 			
-			/*tri_2 = new Trinomial(Polynomial.createFromString("x^17+x^3+x^0"));
+			tri_2 = new Trinomial(Polynomial.createFromString("x^17+x^3+x^0"));
 			System.out.println(tri_2.isIrreducible());
 			System.out.println(tri_2.toPolynomialString());
-			TrinomialContMatrix cont2 = new TrinomialContMatrix(tri_2);
-			cont2.run();
-			System.out.println(cont2.getTotalXor());
-			cont2.saveXLS();*/
+			System.out.println(cont.calculate(tri_2));
+			cont.saveXLS();
 		//	TrinomialContXor cont = new TrinomialContXor(tri);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
