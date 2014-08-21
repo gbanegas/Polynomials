@@ -10,7 +10,7 @@ import br.labsec.thesis.otimization.TrinomialCont;
 import br.labsec.thesis.polynomials.Polynomial;
 import br.labsec.thesis.polynomials.Trinomial;
 
-public class TrinomialContMatrixTest {
+public class TrinomialContTest {
 	private TrinomialCont cont;
 
 	@Before

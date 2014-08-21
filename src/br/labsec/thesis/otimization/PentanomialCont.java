@@ -31,10 +31,10 @@ public class PentanomialCont {
 		this.actual_row = 1;
 		this.pent = pent;
 		int nr = this.calculateNR();
-		this.max_row = (nr * 10) + 5;
+		this.max_row = (nr * this.pent.degree().intValue() * this.pent.getC().intValue()) + 5;
 		this.generateMatrix(nr);
 		this.reduction(nr);
-		//this.repeatRemove();
+		this.repeatRemove();
 		return this.countXor();
 	}
 
@@ -59,26 +59,30 @@ public class PentanomialCont {
 
 	private void reduceOthers() {
 		ArrayList<Integer> rowsToReduce = this.getNeedToReduce();
-		
+
 		for (int i = 0; i < rowsToReduce.size(); i++) {
 			for (int j = 0; j < this.exp.size(); j++) {
 				this.reduceRow(this.exp.get(j), rowsToReduce.get(i));
-				this.cleanReduced(rowsToReduce.get(i));
+
 			}
-		
 		}
 		
+		for (int i = 0; i < rowsToReduce.size(); i++){
+			if(i >0)
+				this.addColums();
+			this.cleanReduced(rowsToReduce.get(i));
 		
+		}
+
 	}
 
 	private void cleanReduced(int index) {
-			double[] rr = this.matrix.getRow(index);
-			for(int j = 0; j < this.pent.degree().intValue()-1;j++)
-			{
-				rr[j] = NULL;
-			}
-			this.matrix.setRow(index, rr);
-		
+		double[] rr = this.matrix.getRow(index);
+		for (int j = 0; j < this.pent.degree().intValue() - 1; j++) {
+			rr[j] = NULL;
+		}
+		this.matrix.setRow(index, rr);
+
 	}
 
 	private void reduceRow(Integer exp, Integer row) {
@@ -378,7 +382,7 @@ public class PentanomialCont {
 		}
 		return true;
 	}
-	
+
 	public void printMatrix() {
 		System.out.println();
 		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
