@@ -305,12 +305,13 @@ public class TrinomialCont {
 	}
 
 	public void saveXLS() throws LimitExceededException {
-
-		this.clean();
+		for(int i = 0; i < this.calculateNR();i++)
+			this.clean();
+		
 		if (this.matrix.getColumnDimension() <= 16384) {
 			XLSWriter xlsWriter = new XLSWriter();
 			xlsWriter.setFileName("Reduction_" + this.tri.degree().toString()
-					+ "_" + this.tri.getA().toString() + ".xls");
+					+ "_" + this.tri.getA().toString() + ".xlsx");
 			xlsWriter.save(this.matrix, this.tri);
 			
 		} else {
@@ -320,21 +321,33 @@ public class TrinomialCont {
 	}
 
 	private void clean() {
-		boolean isNeedToClean = this.isNeedToClean();
-		
-		if(isNeedToClean)
-		{
-			
-		}
-	}
-
-	private boolean isNeedToClean() {
 		for(int i = 1; i < this.matrix.getRowDimension(); i++)
 		{
 			double[] row = this.matrix.getRow(i);
 			boolean clean = this.isCleanRow(row);
+			if(clean)
+			{
+				int nextNotEmpty = this.getNextNotEmpty(i);
+				if(nextNotEmpty != NULL)
+				{
+					double[] rowNotEmpty = this.matrix.getRow(nextNotEmpty);
+					this.matrix.setRow(i, rowNotEmpty);
+					this.matrix.setRow(nextNotEmpty, row);
+				}
+			}
 		}
-		return false;
+	}
+
+	
+	private int getNextNotEmpty(int next) {
+		for(int i = next; i < this.matrix.getRowDimension(); i++)
+		{
+			double[] row = this.matrix.getRow(i);
+			if(!this.isCleanRow(row)){
+				return i;
+			}
+		}
+		return (int) NULL;
 	}
 
 	private boolean isCleanRow(double[] row) {
