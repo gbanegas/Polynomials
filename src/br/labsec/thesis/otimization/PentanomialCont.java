@@ -1,25 +1,16 @@
 package br.labsec.thesis.otimization;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 import javax.naming.LimitExceededException;
 
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 
 import br.labsec.thesis.polynomials.Pentanomial;
-import br.labsec.thesis.polynomials.Trinomial;
+import br.labsec.thesis.util.XLSWriter;
 
 public class PentanomialCont {
 
@@ -31,12 +22,11 @@ public class PentanomialCont {
 	private int actual_row;
 
 	private ArrayList<Integer> exp;
-	private String fileName;
 
 	public PentanomialCont() {
-		
+
 	}
-	
+
 	public int calculate(Pentanomial pent) {
 		this.actual_row = 1;
 		this.pent = pent;
@@ -44,10 +34,10 @@ public class PentanomialCont {
 		this.max_row = (nr * 10) + 5;
 		this.generateMatrix(nr);
 		this.reduction(nr);
-		this.repeatRemove();
+		//this.repeatRemove();
 		return this.countXor();
 	}
-	
+
 	private void reduction(int nr) {
 		this.firstRow();
 		this.extractExp();
@@ -57,13 +47,83 @@ public class PentanomialCont {
 			h++;
 		}
 		this.actual_row = h;
+
 		for (int i = 1; i < nr; i++) {
-			this.madeOthersReductions(i);
+			this.reduceOthers();
+
 		}
-			this.addColums();
+
+		// this.addColums();
 
 	}
-	
+
+	private void reduceOthers() {
+		ArrayList<Integer> rowsToReduce = this.getNeedToReduce();
+		
+		for (int i = 0; i < rowsToReduce.size(); i++) {
+			for (int j = 0; j < this.exp.size(); j++) {
+				this.reduceRow(this.exp.get(j), rowsToReduce.get(i));
+				this.cleanReduced(rowsToReduce.get(i));
+			}
+		
+		}
+		
+		
+	}
+
+	private void cleanReduced(int index) {
+			double[] rr = this.matrix.getRow(index);
+			for(int j = 0; j < this.pent.degree().intValue()-1;j++)
+			{
+				rr[j] = NULL;
+			}
+			this.matrix.setRow(index, rr);
+		
+	}
+
+	private void reduceRow(Integer exp, Integer row) {
+		int index = this.max_size;
+		double[] r = this.matrix.getRow(row);
+		ArrayList<Double> elements = new ArrayList<>();
+		double[] toWrite = this.matrix.getRow(this.actual_row);
+
+		for (int i = this.getIndex(r); i < this.pent.degree().intValue() - 1; i++) {
+			double element = this.matrix.getEntry(row, i);
+			elements.add(element);
+
+		}
+		Collections.sort(elements);
+
+		for (int i = 0; i < elements.size(); i++) {
+			toWrite[index - exp] = elements.get(i);
+			index--;
+
+		}
+		this.matrix.setRow(this.actual_row, toWrite);
+		this.actual_row++;
+
+	}
+
+	private int getIndex(double[] r) {
+		for (int i = 0; i < r.length; i++) {
+			if (r[i] != NULL)
+				return i;
+		}
+		return 0;
+	}
+
+	private ArrayList<Integer> getNeedToReduce() {
+		ArrayList<Integer> indexOfRows = new ArrayList<Integer>();
+
+		for (int i = 3; i < this.matrix.getRowDimension(); i++) {
+			if (this.matrix.getEntry(i, this.pent.degree().intValue() - 1) != NULL) {
+				indexOfRows.add(i);
+			}
+
+		}
+		return indexOfRows;
+	}
+
 	private int countXor() {
 
 		int nextRow = this.actual_row + 1;
@@ -98,7 +158,6 @@ public class PentanomialCont {
 
 	}
 
-
 	private void repeatRemove() {
 
 		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
@@ -119,9 +178,9 @@ public class PentanomialCont {
 								found = true;
 							}
 						}
-						
+
 						matrix.setRow(l, rowToCompare);
-						if(found)
+						if (found)
 							break;
 					}
 				}
@@ -129,50 +188,6 @@ public class PentanomialCont {
 			this.matrix.setRow(j, row);
 
 		}
-
-	}
-
-	private void madeOthersReductions(int actual_nr) {
-		int index_rowToGet = this.actual_row - actual_nr;
-		double[] toReduce = this.matrix.getRow(index_rowToGet);
-		this.mountOthers(toReduce, index_rowToGet);
-	}
-
-	private void mountOthers(double[] toReduce, int index_rowToGet) {
-
-		int temp = this.actual_row + 1;
-		for (int j = 0; j < this.exp.size(); j++) {
-			int index = this.max_size;
-			ArrayList<Double> elements = new ArrayList<>();
-			ArrayList<Double> elements_2 = new ArrayList<>();
-			double[] toSave = this.matrix.getRow(this.actual_row);
-			double[] toSave_2 = this.matrix.getRow(temp);
-
-			for (int i = 0; i < this.pent.degree().intValue() - 1; i++) {
-				double reduced = toReduce[i];
-				if (reduced != NULL) {
-					if (reduced >= this.pent.degree().intValue()) {
-						elements_2
-								.add(this.matrix.getRow(index_rowToGet - 2)[i]);
-						elements.add(toReduce[i]);
-
-					}
-				}
-			}
-			Collections.sort(elements);
-			Collections.sort(elements_2);
-			for (int i = 0; i < elements.size(); i++) {
-				toSave[index - this.exp.get(j)] = elements.get(i);
-				toSave_2[index - this.exp.get(j)] = elements_2.get(i);
-				index--;
-			}
-
-			this.matrix.setRow(this.actual_row, toSave);
-			this.matrix.setRow(temp, toSave_2);
-			temp++;
-			this.actual_row = temp + 1;
-		}
-		this.actual_row++;
 
 	}
 
@@ -243,7 +258,7 @@ public class PentanomialCont {
 		}
 		return r;
 	}
-	
+
 	private void mountFirst(Integer exp, Integer row) {
 		int index = this.max_size;
 		double[] r = this.matrix.getRow(row);
@@ -262,7 +277,6 @@ public class PentanomialCont {
 
 	}
 
-	
 	private void extractExp() {
 		exp = new ArrayList<>();
 		exp.add(0);
@@ -282,9 +296,10 @@ public class PentanomialCont {
 		}
 
 	}
-	
+
 	private void generateMatrix(int nr) {
-		this.matrix = MatrixUtils.createRealMatrix(this.max_row,this.max_size + 1);
+		this.matrix = MatrixUtils.createRealMatrix(this.max_row,
+				this.max_size + 1);
 		this.cleanMatrix();
 
 	}
@@ -297,6 +312,7 @@ public class PentanomialCont {
 		}
 
 	}
+
 	private int calculateNR() {
 		BigInteger bigMaxSize = (this.pent.degree()
 				.multiply(new BigInteger("2"))).subtract(new BigInteger("2"));
@@ -313,46 +329,66 @@ public class PentanomialCont {
 	}
 
 	public void saveXLS() throws LimitExceededException {
+		for (int i = 0; i < this.calculateNR(); i++)
+			this.clean();
 
 		if (this.matrix.getColumnDimension() <= 16384) {
-			HSSFWorkbook workbook = new HSSFWorkbook();
-			HSSFSheet sheet = workbook.createSheet("Sheet_1");
+			XLSWriter xlsWriter = new XLSWriter();
+			String fileName = "Reduction_" + this.pent.degree().toString()
+					+ "_" + pent.getC() + "_" + pent.getB() + "_"
+					+ this.pent.getA().toString() + ".xlsx";
+			xlsWriter.setFileName(fileName);
+			xlsWriter.save(this.matrix, this.pent);
 
-			for (int i = 0; i < this.matrix.getRowDimension(); i++) {
-				Row row = sheet.createRow(i);
-				for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
-					Cell cell = row.createCell(j);
-					double value = this.matrix.getEntry(i, j);
-					if (value == NULL)
-						cell.setCellType(Cell.CELL_TYPE_BLANK);
-					else
-						cell.setCellValue(value);
-
-				}
-			}
-
-			try {
-				String fileName = "Reduction_" + this.pent.degree().toString()
-						+ "_" + pent.getC() + "_" + pent.getB() + "_"
-						+ this.pent.getA().toString() + ".xls";
-				FileOutputStream out = new FileOutputStream(new File(fileName));
-				workbook.write(out);
-				out.close();
-				System.out.println("Excel written successfully..");
-
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		} else {
 			throw new LimitExceededException(
 					"The size of the columns is too big to create a xls file.");
 		}
 	}
 
+	private void clean() {
+		for (int i = 1; i < this.matrix.getRowDimension(); i++) {
+			double[] row = this.matrix.getRow(i);
+			boolean clean = this.isCleanRow(row);
+			if (clean) {
+				int nextNotEmpty = this.getNextNotEmpty(i);
+				if (nextNotEmpty != NULL) {
+					double[] rowNotEmpty = this.matrix.getRow(nextNotEmpty);
+					this.matrix.setRow(i, rowNotEmpty);
+					this.matrix.setRow(nextNotEmpty, row);
+				}
+			}
+		}
+	}
 
+	private int getNextNotEmpty(int next) {
+		for (int i = next; i < this.matrix.getRowDimension(); i++) {
+			double[] row = this.matrix.getRow(i);
+			if (!this.isCleanRow(row)) {
+				return i;
+			}
+		}
+		return (int) NULL;
+	}
 
+	private boolean isCleanRow(double[] row) {
+		for (int i = 0; i < row.length; i++) {
+			if (row[i] != NULL)
+				return false;
+		}
+		return true;
+	}
 	
+	public void printMatrix() {
+		System.out.println();
+		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
+			for (int i = 0; i < this.matrix.getColumnDimension(); i++) {
+				double n = this.matrix.getEntry(j, i);
+				System.out.print(n + " ");
+			}
+			System.out.println("");
+		}
+
+	}
 
 }
