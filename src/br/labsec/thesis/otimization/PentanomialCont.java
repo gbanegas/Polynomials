@@ -22,6 +22,7 @@ public class PentanomialCont {
 	private int actual_row;
 
 	private ArrayList<Integer> exp;
+	private String fileName;
 
 	public PentanomialCont() {
 
@@ -341,6 +342,7 @@ public class PentanomialCont {
 			String fileName = "Reduction_" + this.pent.degree().toString()
 					+ "_" + pent.getC() + "_" + pent.getB() + "_"
 					+ this.pent.getA().toString() + ".xlsx";
+			this.fileName = fileName;
 			xlsWriter.setFileName(fileName);
 			xlsWriter.save(this.matrix, this.pent);
 
@@ -393,6 +395,10 @@ public class PentanomialCont {
 			System.out.println("");
 		}
 
+	}
+	
+	public String getFileName() {
+		return fileName;
 	}
 
 }

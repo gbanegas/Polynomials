@@ -4,7 +4,9 @@ import java.awt.event.ActionEvent;
 
 import javax.naming.SizeLimitExceededException;
 
+import br.labsec.thesis.otimization.PentanomialCont;
 import br.labsec.thesis.otimization.TrinomialCont;
+import br.labsec.thesis.polynomials.Pentanomial;
 import br.labsec.thesis.polynomials.Polynomial;
 import br.labsec.thesis.polynomials.Trinomial;
 
@@ -205,27 +207,49 @@ public class MainWindow extends javax.swing.JFrame {
 		Polynomial p = Polynomial.createFromString(pol);
 
 		try {
-			Trinomial tri = new Trinomial(p);
-			// ProgressBarGUI tb = new ProgressBarGUI();
-			// tb.setVisible(true);
-			// tb.startProcessing();
-			TrinomialCont cont = new TrinomialCont();
-			int totalXor = cont.calculate(tri);
-			this.jTextField3.setText("" + totalXor);
-			String text = "The polynomial " + tri.toPolynomialString() + "\n";
+			int totalXor = 0;
+			String text = "The polynomial ";
+			
+			if (p.getDegrees().size() == 3) {
+				TrinomialCont cont = new TrinomialCont();
+				Trinomial tri = new Trinomial(p);
+				totalXor = cont.calculate(tri);
+				text = text + tri.toPolynomialString() + "\n";
+				try {
+					cont.saveXLS();
+					text = text + "The analisys is located: " + cont.getFileName()
+							+ "\n";
+				} catch (SizeLimitExceededException ex) {
+					text = text + ex.getMessage() + "\n";
+				}
+				if (tri.isIrreducible()) {
+					text = text + "The Polynomial is irreducible.";
+				} else {
+					text = text + "The Polynomial isn't irreducible.";
+				}
+			}
+			else if(p.getDegrees().size() == 3){
+				PentanomialCont cont = new PentanomialCont();
+				Pentanomial pent = new Pentanomial(p);
+				totalXor = cont.calculate(pent);
+				text = text + pent.toPolynomialString() + "\n";
+				try {
+					cont.saveXLS();
+					text = text + "The analisys is located: " + cont.getFileName()
+							+ "\n";
+				} catch (SizeLimitExceededException ex) {
+					text = text + ex.getMessage() + "\n";
+				}
+				if (pent.isIrreducible()) {
+					text = text + "The Polynomial is irreducible.";
+				} else {
+					text = text + "The Polynomial isn't irreducible.";
+				}
+				
+			}
 
-			try {
-				cont.saveXLS();
-				text = text + "The analisys is located: " + cont.getFileName()
-						+ "\n";
-			} catch (SizeLimitExceededException ex) {
-				text = text + ex.getMessage()+ "\n";
-			}
-			if (tri.isIrreducible()) {
-				text = text + "The Polynomial is irreducible.";
-			} else {
-				text = text + "The Polynomial isn't irreducible.";
-			}
+			this.jTextField3.setText("" + totalXor);
+			
 
 			this.jTextArea1.setText(text);
 
