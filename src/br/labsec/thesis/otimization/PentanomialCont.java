@@ -69,7 +69,7 @@ public class PentanomialCont {
 		}
 		
 		for (int i = 0; i < rowsToReduce.size(); i++){
-			if(i >0)
+			if(i > 0 )
 				this.addColums();
 			this.cleanReduced(rowsToReduce.get(i));
 		
@@ -197,6 +197,7 @@ public class PentanomialCont {
 	}
 
 	private void addColums() {
+		//TODO REVERIFICAR
 		int index_row = findTheRowLessSize();
 		int index_colum = findColum(index_row);
 		for (int i = 0; i < index_row; i++) {
