@@ -28,7 +28,7 @@ public class XLSWriter {
 		for (int i = 0; i < matrix.getRowDimension(); i++) {
 			Row row = sheet.createRow(i);
 			int h = 0;
-			for (int j = 0; j < matrix.getColumnDimension(); j++) {
+			for (int j = p.degree().intValue()-1; j < matrix.getColumnDimension(); j++) {
 				Cell cell = row.createCell(h);
 				double value = matrix.getEntry(i, j);
 				if (value == NULL)
