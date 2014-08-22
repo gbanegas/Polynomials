@@ -20,6 +20,7 @@ public class PentanomialCont {
 	private int max_size;
 	private int max_row;
 	private int actual_row;
+	private RealMatrix matrixCopy;
 
 	private ArrayList<Integer> exp;
 	private String fileName;
@@ -32,7 +33,8 @@ public class PentanomialCont {
 		this.actual_row = 1;
 		this.pent = pent;
 		int nr = this.calculateNR();
-		this.max_row = (nr * this.pent.degree().intValue() * this.pent.getC().intValue()) + 5;
+		this.max_row = (nr * this.pent.degree().intValue() * this.pent.getC()
+				.intValue()) + 5;
 		this.generateMatrix(nr);
 		this.reduction(nr);
 		this.repeatRemove();
@@ -54,7 +56,7 @@ public class PentanomialCont {
 
 		}
 
-		// this.addColums();
+		this.addColums();
 
 	}
 
@@ -67,12 +69,10 @@ public class PentanomialCont {
 
 			}
 		}
-		
-		for (int i = 0; i < rowsToReduce.size(); i++){
-			if(i > 0 )
-				this.addColums();
+
+		for (int i = 0; i < rowsToReduce.size(); i++) {
 			this.cleanReduced(rowsToReduce.get(i));
-		
+
 		}
 
 	}
@@ -105,7 +105,18 @@ public class PentanomialCont {
 
 		}
 		this.matrix.setRow(this.actual_row, toWrite);
+		this.copyMatrix();
 		this.actual_row++;
+
+	}
+
+	private void copyMatrix() {
+		for (int i = 0; i < this.matrix.getRowDimension(); i++) {
+			for (int j = this.pent.degree().intValue() - 1; j < this.matrix
+					.getColumnDimension(); j++) {
+				this.matrixCopy.setEntry(i, j, this.matrix.getEntry(i, j));
+			}
+		}
 
 	}
 
@@ -197,11 +208,11 @@ public class PentanomialCont {
 	}
 
 	private void addColums() {
-		//TODO REVERIFICAR
+		// TODO REVERIFICAR
 		int index_row = findTheRowLessSize();
 		int index_colum = findColum(index_row);
 		for (int i = 0; i < index_row; i++) {
-			double[] rowToGet = this.matrix.getRow(i);
+			double[] rowToGet = this.matrixCopy.getRow(i);
 			if (rowToGet[index_colum] != NULL) {
 				ArrayList<Double> elements = new ArrayList<>();
 
@@ -213,7 +224,7 @@ public class PentanomialCont {
 
 				for (int j = 0; j < this.exp.size(); j++) {
 					int index = this.max_size;
-					double[] toSave = this.matrix.getRow(this.actual_row);
+					double[] toSave = this.matrixCopy.getRow(this.actual_row);
 					for (int h = 0; h < elements.size(); h++) {
 						toSave[index - this.exp.get(j)] = elements.get(h);
 						index--;
@@ -243,7 +254,7 @@ public class PentanomialCont {
 		int r = -1;
 		int temp = 99999999;
 		for (int i = this.actual_row; i > 0; i--) {
-			double[] row = this.matrix.getRow(i);
+			double[] row = this.matrixCopy.getRow(i);
 			int count = 0;
 			boolean isAllNull = true;
 			for (int j = 0; j < this.pent.degree().intValue() - 1; j++) {
@@ -279,7 +290,9 @@ public class PentanomialCont {
 			r[index - exp] = elements.get(i);
 			index--;
 		}
+
 		this.matrix.setRow(row, r);
+		this.matrixCopy.setRow(row, r);
 
 	}
 
@@ -306,6 +319,8 @@ public class PentanomialCont {
 	private void generateMatrix(int nr) {
 		this.matrix = MatrixUtils.createRealMatrix(this.max_row,
 				this.max_size + 1);
+		this.matrixCopy = MatrixUtils.createRealMatrix(this.max_row,
+				this.max_size + 1);
 		this.cleanMatrix();
 
 	}
@@ -314,6 +329,7 @@ public class PentanomialCont {
 		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
 			for (int i = 0; i < this.matrix.getColumnDimension(); i++) {
 				this.matrix.setEntry(j, i, NULL);
+				this.matrixCopy.setEntry(j, i, NULL);
 			}
 		}
 
@@ -398,6 +414,18 @@ public class PentanomialCont {
 
 	}
 	
+	public void printMatrixCopy() {
+		System.out.println();
+		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
+			for (int i = 0; i < this.matrix.getColumnDimension(); i++) {
+				double n = this.matrix.getEntry(j, i);
+				System.out.print(n + " ");
+			}
+			System.out.println("");
+		}
+
+	}
+
 	public String getFileName() {
 		return fileName;
 	}
