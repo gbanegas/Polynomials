@@ -36,7 +36,7 @@ public class TrinomialCont {
 		this.generateMatrix(nr);
 		this.reduction(nr);
 
-		this.repeatRemove();
+		//this.repeatRemove();
 
 		return countXor();
 	}

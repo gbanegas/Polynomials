@@ -70,6 +70,22 @@ public class Polynomial implements Comparable<Polynomial> {
 	}
 
 	/**
+	 * Constructs a polynomial using the bits from a vector of bits
+	 * @param b vector of bits
+	 * @return Polynomial
+	 */
+	public static Polynomial createFromArrayVector(boolean[] b) {
+		TreeSet<BigInteger> dgrs = createDegreesCollection();
+		for (int i = 0; i < b.length; i++) {
+			if(b[i] == true)
+			{
+				dgrs.add(BigInteger.valueOf(i));
+			}
+		}
+		return new Polynomial(dgrs);
+	}
+	
+	/**
 	 * Constructs a polynomial using the bits from a long. Note that Java does
 	 * not support unsigned longs.
 	 */
@@ -414,6 +430,22 @@ public class Polynomial implements Comparable<Polynomial> {
 		}
 		return str.toString();
 	}
+	/**
+	 * Change the polynomial to a Byte[]
+	 */
+	
+	public boolean[] toByte()
+	{
+		boolean[] arrayToReturn =  new boolean[this.degree().intValue()+1];
+		for (BigInteger deg = degree(); deg.compareTo(BigInteger.ZERO) >= 0; deg = deg.subtract(BigInteger.ONE)) {
+			if (degrees.contains(deg)) {
+				arrayToReturn[deg.intValue()] = true;
+			} else {
+				arrayToReturn[deg.intValue()] = false;
+			}
+		}
+		return arrayToReturn;
+	}
 
 	/**
 	 * Returns standard ascii representation of this polynomial in the form:
@@ -542,4 +574,6 @@ public class Polynomial implements Comparable<Polynomial> {
 			return 0;
 		return this.hasDegree(x.degree()) ? 1 : -1;
 	}
+
+	
 }

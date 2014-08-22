@@ -18,13 +18,13 @@ public class TestOtimizationTrinomial {
 			System.out.println(cont.calculate(tri));
 			cont.saveXLS();*/
 			
-			tri_2 = new Trinomial(Polynomial.createFromString("x^17+x^14+x^0"));
+			tri_2 = new Trinomial(Polynomial.createFromString("x^32+x^8+x^0"));
 			System.out.println(tri_2.isIrreducible());
 			System.out.println(tri_2.toPolynomialString());
 			System.out.println(cont.calculate(tri_2));
 			cont.saveXLS();
 			
-			tri_3 = new Trinomial(Polynomial.createFromString("x^1255 +x^74+x^0"));
+			tri_3 = new Trinomial(Polynomial.createFromString("x^233 +x^74+x^0"));
 			//System.out.println(tri_3.isIrreducible());
 			System.out.println(tri_3.toPolynomialString());
 			System.out.println(cont.calculate(tri_3));

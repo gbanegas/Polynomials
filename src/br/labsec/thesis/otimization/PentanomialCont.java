@@ -112,9 +112,9 @@ public class PentanomialCont {
 
 	private void copyMatrix() {
 		for (int i = 0; i < this.matrix.getRowDimension(); i++) {
-			for (int j = this.pent.degree().intValue() - 1; j < this.matrix
-					.getColumnDimension(); j++) {
-				this.matrixCopy.setEntry(i, j, this.matrix.getEntry(i, j));
+			for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
+				if (this.matrix.getEntry(i, j) != NULL)
+					this.matrixCopy.setEntry(i, j, this.matrix.getEntry(i, j));
 			}
 		}
 
@@ -413,7 +413,7 @@ public class PentanomialCont {
 		}
 
 	}
-	
+
 	public void printMatrixCopy() {
 		System.out.println();
 		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
