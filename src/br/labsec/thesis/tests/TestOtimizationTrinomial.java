@@ -1,6 +1,6 @@
 package br.labsec.thesis.tests;
 
-import br.labsec.thesis.otimization.TrinomialCont;
+import br.labsec.thesis.otimization.TriContXor;
 import br.labsec.thesis.polynomials.Polynomial;
 import br.labsec.thesis.polynomials.Trinomial;
 
@@ -10,7 +10,7 @@ public class TestOtimizationTrinomial {
 		Trinomial tri_2;
 		Trinomial tri_3;
 		try {
-			TrinomialCont cont = new TrinomialCont();
+			TriContXor cont = new TriContXor();
 			/*tri = new Trinomial(Polynomial.createFromString("x^17+x^10+x^0"));
 			System.out.println(tri.isIrreducible());
 			System.out.println(tri.toPolynomialString());
@@ -18,13 +18,13 @@ public class TestOtimizationTrinomial {
 			System.out.println(cont.calculate(tri));
 			cont.saveXLS();*/
 			
-			tri_2 = new Trinomial(Polynomial.createFromString("x^32+x^8+x^0"));
+			/*tri_2 = new Trinomial(Polynomial.createFromString("x^32+x^8+x^0"));
 			System.out.println(tri_2.isIrreducible());
 			System.out.println(tri_2.toPolynomialString());
 			System.out.println(cont.calculate(tri_2));
-			cont.saveXLS();
+			cont.saveXLS();*/
 			
-			tri_3 = new Trinomial(Polynomial.createFromString("x^233 +x^74+x^0"));
+			tri_3 = new Trinomial(Polynomial.createFromString("x^233+x^74+x^0"));
 			//System.out.println(tri_3.isIrreducible());
 			System.out.println(tri_3.toPolynomialString());
 			System.out.println(cont.calculate(tri_3));

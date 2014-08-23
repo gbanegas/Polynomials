@@ -36,7 +36,7 @@ public class TrinomialCont {
 		this.generateMatrix(nr);
 		this.reduction(nr);
 
-		//this.repeatRemove();
+		this.repeatRemove();
 
 		return countXor();
 	}
@@ -50,13 +50,81 @@ public class TrinomialCont {
 			h++;
 		}
 		this.actual_row = h;
-		for (int i = 1; i < nr; i++) {
-			this.madeOthersReductions(i);
+		for (int i = 0; i < nr; i++) {
+			this.reduceOthers();
 		}
-		if(nr > 2)
-			this.addColums();
+		
+	}
+	
+	private void reduceOthers() {
+		ArrayList<Integer> rowsToReduce = this.getNeedToReduce();
+
+		for (int i = 0; i < rowsToReduce.size(); i++) {
+			for (int j = 0; j < this.exp.size(); j++) {
+				this.reduceRow(this.exp.get(j), rowsToReduce.get(i));
+
+			}
+		}
+
+		for (int i = 0; i < rowsToReduce.size(); i++) {
+			this.cleanReduced(rowsToReduce.get(i));
+
+		}
 
 	}
+	
+	private void cleanReduced(int index) {
+		double[] rr = this.matrix.getRow(index);
+		for (int j = 0; j < this.tri.degree().intValue() - 1; j++) {
+			rr[j] = NULL;
+		}
+		this.matrix.setRow(index, rr);
+
+	}
+
+	private void reduceRow(Integer exp, Integer row) {
+		int index = this.max_size;
+		double[] r = this.matrix.getRow(row);
+		ArrayList<Double> elements = new ArrayList<>();
+		double[] toWrite = this.matrix.getRow(this.actual_row);
+
+		for (int i = this.getIndex(r); i < this.tri.degree().intValue() - 1; i++) {
+			double element = this.matrix.getEntry(row, i);
+			elements.add(element);
+
+		}
+		Collections.sort(elements);
+
+		for (int i = 0; i < elements.size(); i++) {
+			toWrite[index - exp] = elements.get(i);
+			index--;
+
+		}
+		this.matrix.setRow(this.actual_row, toWrite);
+		this.actual_row++;
+
+	}
+
+	private int getIndex(double[] r) {
+		for (int i = 0; i < r.length; i++) {
+			if (r[i] != NULL)
+				return i;
+		}
+		return 0;
+	}
+
+	private ArrayList<Integer> getNeedToReduce() {
+		ArrayList<Integer> indexOfRows = new ArrayList<Integer>();
+
+		for (int i = 3; i < this.matrix.getRowDimension(); i++) {
+			if (this.matrix.getEntry(i, this.tri.degree().intValue() - 1) != NULL) {
+				indexOfRows.add(i);
+			}
+
+		}
+		return indexOfRows;
+	}
+
 
 	private int countXor() {
 
