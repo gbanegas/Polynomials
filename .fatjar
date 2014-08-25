@@ -1,10 +1,10 @@
 #Fat Jar Configuration File
-#Tue Aug 19 22:54:45 BRT 2014
+#Sat Aug 23 17:26:19 BRT 2014
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=false
-jarname=AlgContXor_v2.jar
+jarname=AlgContXor_v2.4.jar
 manifest.mergeall=true
 manifest.mainclass=br.labsec.thesis.gui.MainWindow
 manifest.file=<createnew>
