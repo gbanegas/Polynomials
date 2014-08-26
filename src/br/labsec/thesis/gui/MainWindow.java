@@ -228,7 +228,7 @@ public class MainWindow extends javax.swing.JFrame {
 					text = text + "The Polynomial isn't irreducible.";
 				}
 			}
-			else if(p.getDegrees().size() == 3){
+			else if(p.getDegrees().size() == 5){
 				PentanomialCont cont = new PentanomialCont();
 				Pentanomial pent = new Pentanomial(p);
 				totalXor = cont.calculate(pent);
