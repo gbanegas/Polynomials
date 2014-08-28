@@ -15,7 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import br.labsec.thesis.otimization.PentanomialCont;
-import br.labsec.thesis.otimization.TrinomialCont;
+import br.labsec.thesis.otimization.TriContXor;
 import br.labsec.thesis.polynomials.Pentanomial;
 import br.labsec.thesis.polynomials.Polynomial;
 import br.labsec.thesis.polynomials.Trinomial;
@@ -190,7 +190,7 @@ public class MainWindow extends javax.swing.JFrame {
 			String text = "The polynomial ";
 			
 			if (p.getDegrees().size() == 3) {
-				TrinomialCont cont = new TrinomialCont();
+				TriContXor cont = new TriContXor();
 				Trinomial tri = new Trinomial(p);
 				totalXor = cont.calculate(tri);
 				text = text + tri.toPolynomialString() + "\n";

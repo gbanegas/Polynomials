@@ -15,7 +15,9 @@ import br.labsec.thesis.util.XLSWriter;
 public class TriContXor {
 
 	private static final double NULL = -1;
+	private static final double T = -2;
 	private RealMatrix matrix;
+	private RealMatrix matrixOpt;
 	private Trinomial tri;
 	private int max_size;
 	private int max_row;
@@ -28,13 +30,47 @@ public class TriContXor {
 		actual_row = 1;
 		this.tri = tri;
 		int nr = this.calculateNR();
-		this.max_row = (nr * 6) + 5;
+		this.max_row = (nr*tri.degree().intValue()*3) + 5;
 		this.generateMatrix(nr);
 		this.reduction(nr);
 
 		this.repeatRemove();
+		int countXor = this.countXor();
 
-		return countXor();
+		return countXor;
+	}
+
+	private void optimize() {
+		this.removeNULLrows();
+		
+		
+		
+		
+	}
+
+	private void removeNULLrows() {
+		int index = this.findNull();
+		this.matrixOpt = MatrixUtils.createRealMatrix(index,
+				this.matrix.getColumnDimension());
+		for (int i = 0; i < index; i++) {
+			for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
+				this.matrixOpt.setEntry(i, j, this.matrix.getEntry(i, j));
+			}
+		}
+	}
+
+	private int findNull() {
+		for (int i = 0; i < this.matrix.getRowDimension(); i++) {
+			double[] row = this.matrix.getRow(i);
+			for (int j = 0; j < row.length; j++) {
+				if (row[j] != NULL)
+					break;
+
+				if (j == row.length - 1)
+					return i;
+			}
+		}
+		return -1;
 	}
 
 	private void repeatRemove() {
@@ -56,9 +92,9 @@ public class TriContXor {
 								found = true;
 							}
 						}
-						
+
 						matrix.setRow(l, rowToCompare);
-						if(found)
+						if (found)
 							break;
 					}
 				}
@@ -66,11 +102,11 @@ public class TriContXor {
 			this.matrix.setRow(j, row);
 
 		}
-		
+
 	}
 
 	private int countXor() {
-		int nextRow = this.actual_row + 1;
+		int nextRow = this.actual_row + 2;
 		double[] rowToWrite = matrix.getRow(nextRow);
 		double[] row = matrix.getRow(0);
 		for (int i = this.tri.degree().intValue() - 1; i < matrix
@@ -251,11 +287,15 @@ public class TriContXor {
 		for (int i = 0; i < this.calculateNR(); i++)
 			this.clean();
 
+		this.optimize();
 		if (this.matrix.getColumnDimension() <= 16384) {
 			XLSWriter xlsWriter = new XLSWriter();
 			xlsWriter.setFileName("Reduction_" + this.tri.degree().toString()
 					+ "_" + this.tri.getA().toString() + ".xlsx");
-			xlsWriter.save(this.matrix, this.tri);
+			xlsWriter.save(this.matrix, this.tri,"Not Optimized");
+			xlsWriter.save(this.matrixOpt, this.tri,"Optimized");
+			
+			xlsWriter.close();
 
 		} else {
 			throw new LimitExceededException(

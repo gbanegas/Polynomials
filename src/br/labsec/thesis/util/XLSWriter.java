@@ -15,15 +15,16 @@ import br.labsec.thesis.polynomials.Polynomial;
 
 public class XLSWriter {
 	String fileName;
+	SXSSFWorkbook workbook;
 	private static final double NULL = -1;
 	public XLSWriter() {
-		
+		workbook = new SXSSFWorkbook(-1);
 	}
 	
-	public void save(RealMatrix matrix, Polynomial p)
+	public void save(RealMatrix matrix, Polynomial p, String sheetName)
 	{
-		SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
-		Sheet sheet = workbook.createSheet("Sheet_1");
+		
+		Sheet sheet = workbook.createSheet(sheetName);
 
 		for (int i = 0; i < matrix.getRowDimension(); i++) {
 			Row row = sheet.createRow(i);
@@ -39,6 +40,14 @@ public class XLSWriter {
 			}
 		}
 
+	
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+		
+	}
+
+	public void close() {
 		
 		try {
 			
@@ -53,9 +62,6 @@ public class XLSWriter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
 		
 	}
 

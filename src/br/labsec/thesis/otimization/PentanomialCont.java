@@ -294,7 +294,7 @@ public class PentanomialCont {
 					+ this.pent.getA().toString() + ".xlsx";
 			this.fileName = fileName;
 			xlsWriter.setFileName(fileName);
-			xlsWriter.save(this.matrix, this.pent);
+			xlsWriter.save(this.matrix, this.pent, "notOptmized");
 
 		} else {
 			throw new LimitExceededException(
