@@ -15,7 +15,7 @@ import br.labsec.thesis.util.XLSWriter;
 public class TriContXor {
 
 	private static final double NULL = -1;
-	private static final double T = -2;
+	//private static final double T = -2;
 	private RealMatrix matrix;
 	private RealMatrix matrixOpt;
 	private Trinomial tri;
@@ -46,6 +46,11 @@ public class TriContXor {
 		
 		
 		
+	}
+
+	
+	public RealMatrix getMatrixOpt() {
+		return matrixOpt;
 	}
 
 	private void removeNULLrows() {
