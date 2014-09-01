@@ -23,7 +23,6 @@ public class TestOtimizationTrinomial {
 			System.out.println(count_xor);
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

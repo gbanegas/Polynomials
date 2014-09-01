@@ -354,7 +354,6 @@ public class TriContXor {
 	}
 
 	public String getFileName() {
-		// TODO Auto-generated method stub
 		return fileName;
 	}
 

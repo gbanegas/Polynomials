@@ -33,7 +33,6 @@ public class TestOtimizationPentanomial {
 			//cont.saveXLS();
 		//	TrinomialContXor cont = new TrinomialContXor(tri);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

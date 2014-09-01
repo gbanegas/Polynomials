@@ -18,7 +18,6 @@ public class TestPoly {
 			Trinomial t = new Trinomial(pa);
 			System.out.println(t.toHexString());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -30,7 +29,6 @@ public class TestPoly {
 			System.out.println(t.toPolynomialString());
 			System.out.println(t.isIReducible());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
 	}
