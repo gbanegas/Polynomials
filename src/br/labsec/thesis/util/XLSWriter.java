@@ -17,6 +17,7 @@ public class XLSWriter {
 	String fileName;
 	SXSSFWorkbook workbook;
 	private static final double NULL = -1;
+	private static final double T = -2;
 	public XLSWriter() {
 		workbook = new SXSSFWorkbook(-1);
 	}
@@ -34,6 +35,8 @@ public class XLSWriter {
 				double value = matrix.getEntry(i, j);
 				if (value == NULL)
 					cell.setCellType(Cell.CELL_TYPE_BLANK);
+				else if(value == T)
+					cell.setCellValue("T");
 				else
 					cell.setCellValue(value);
 				h++;

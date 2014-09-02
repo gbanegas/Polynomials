@@ -15,7 +15,7 @@ import br.labsec.thesis.util.XLSWriter;
 public class TriContXor {
 
 	private static final double NULL = -1;
-	//private static final double T = -2;
+	private static final double T = -2;
 	private RealMatrix matrix;
 	private RealMatrix matrixOpt;
 	private Trinomial tri;
@@ -30,25 +30,63 @@ public class TriContXor {
 		actual_row = 1;
 		this.tri = tri;
 		int nr = this.calculateNR();
-		this.max_row = (nr*tri.degree().intValue()*3) + 5;
+		this.max_row = (nr * tri.degree().intValue() * 3) + 5;
 		this.generateMatrix(nr);
 		this.reduction(nr);
 
 		this.repeatRemove();
+		this.clean();
+		this.optimize();
 		int countXor = this.countXor();
 
 		return countXor;
 	}
+	
+	
 
 	private void optimize() {
+		this.initMatrixOpt();
+		this.copyMatrix();
 		this.removeNULLrows();
-		
-		
-		
+
+		for (int j = 1; j < this.matrixOpt.getRowDimension()-1; j++) {
+			for (int i = this.max_size; i > (this.max_size - this.tri.getA().intValue()+1); i--) {
+				double toCompare = this.matrixOpt.getEntry(j, i);
+				if(toCompare != NULL)
+					this.matrixOpt.setEntry(j, i, T);
+			}
+		}
+		for (int j = 2; j < this.matrixOpt.getRowDimension()-1; j++) {
+			for (int i = (this.max_size - this.tri.getA().intValue()); i > (this.max_size - 2*this.tri.getA().intValue() +1); i--) {
+				double toCompare = this.matrixOpt.getEntry(j, i);
+				if(toCompare != NULL)
+					this.matrixOpt.setEntry(j, i, T);
+			}
+		}
+
+	}
+
+	private void initMatrixOpt() {
+		this.matrixOpt = MatrixUtils.createRealMatrix(this.max_row,
+				this.max_size + 1);
 		
 	}
 
-	
+
+
+	private void copyMatrix() {
+		int j = 0;
+		for (int i = 0; i < matrix.getRowDimension(); i++) {
+			if(!this.isCleanRow(matrix.getRow(i))){
+				this.matrixOpt.setRow(j, matrix.getRow(i));
+				j++;
+			}
+		}
+		
+	}
+
+
+
 	public RealMatrix getMatrixOpt() {
 		return matrixOpt;
 	}
@@ -297,9 +335,9 @@ public class TriContXor {
 			XLSWriter xlsWriter = new XLSWriter();
 			xlsWriter.setFileName("Reduction_" + this.tri.degree().toString()
 					+ "_" + this.tri.getA().toString() + ".xlsx");
-			xlsWriter.save(this.matrix, this.tri,"Not Optimized");
-			xlsWriter.save(this.matrixOpt, this.tri,"Optimized");
-			
+			xlsWriter.save(this.matrix, this.tri, "Not Optimized");
+			xlsWriter.save(this.matrixOpt, this.tri, "Optimized");
+
 			xlsWriter.close();
 
 		} else {
