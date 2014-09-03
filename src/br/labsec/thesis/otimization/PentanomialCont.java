@@ -15,12 +15,14 @@ import br.labsec.thesis.util.XLSWriter;
 public class PentanomialCont {
 
 	private static final double NULL = -1;
+	private static final double T = -2;
 	private RealMatrix matrix;
 	private Pentanomial pent;
 	private int max_size;
 	private int max_row;
 	private int actual_row;
 	private RealMatrix matrixCopy;
+	private RealMatrix matrixOpt;
 
 	private ArrayList<Integer> exp;
 	private String fileName;
@@ -38,7 +40,81 @@ public class PentanomialCont {
 		this.generateMatrix(nr);
 		this.reduction(nr);
 		this.repeatRemove();
+		this.optimize();
 		return this.countXor();
+	}
+
+	private void optimize() {
+		//TODO REFAZR
+		this.initMatrixOpt();
+		this.copyMatrix2();
+		this.removeNULLrows();
+
+		for (int h = 0; h < this.exp.size(); h++) {
+			for (int j = 1; j < this.matrixOpt.getRowDimension() - 1; j++) {
+				for (int i = this.max_size; i > (this.max_size
+						- this.exp.get(h) + 1); i--) {
+					double toCompare = this.matrixOpt.getEntry(j, i);
+					if (toCompare != NULL)
+						this.matrixOpt.setEntry(j, i, T);
+				}
+			}
+			for (int j = 2; j < this.matrixOpt.getRowDimension() - 1; j++) {
+				for (int i = (this.max_size - this.exp.get(h)); i > (this.max_size
+						- 2 * this.exp.get(h).intValue() + 1); i--) {
+					double toCompare = this.matrixOpt.getEntry(j, i);
+					if (toCompare != NULL)
+						this.matrixOpt.setEntry(j, i, T);
+				}
+			}
+		}
+
+	}
+
+	private void initMatrixOpt() {
+		this.matrixOpt = MatrixUtils.createRealMatrix(this.max_row + 4,
+				this.max_size + 1);
+
+	}
+
+	private void copyMatrix2() {
+		int j = 0;
+		for (int i = 0; i < matrix.getRowDimension(); i++) {
+			if (!this.isCleanRow(matrix.getRow(i))) {
+				this.matrixOpt.setRow(j, matrix.getRow(i));
+				j++;
+			}
+		}
+
+	}
+
+	public RealMatrix getMatrixOpt() {
+		return matrixOpt;
+	}
+
+	private void removeNULLrows() {
+		int index = this.findNull();
+		this.matrixOpt = MatrixUtils.createRealMatrix(index,
+				this.matrix.getColumnDimension());
+		for (int i = 0; i < index; i++) {
+			for (int j = 0; j < this.matrix.getColumnDimension(); j++) {
+				this.matrixOpt.setEntry(i, j, this.matrix.getEntry(i, j));
+			}
+		}
+	}
+
+	private int findNull() {
+		for (int i = 0; i < this.matrix.getRowDimension(); i++) {
+			double[] row = this.matrix.getRow(i);
+			for (int j = 0; j < row.length; j++) {
+				if (row[j] != NULL)
+					break;
+
+				if (j == row.length - 1)
+					return i;
+			}
+		}
+		return -1;
 	}
 
 	private void reduction(int nr) {
@@ -56,7 +132,7 @@ public class PentanomialCont {
 
 		}
 
-		 //this.addColums();
+		// this.addColums();
 
 	}
 
@@ -207,8 +283,6 @@ public class PentanomialCont {
 
 	}
 
-
-
 	private void mountFirst(Integer exp, Integer row) {
 		int index = this.max_size;
 		double[] r = this.matrix.getRow(row);
@@ -295,7 +369,9 @@ public class PentanomialCont {
 			this.fileName = fileName;
 			xlsWriter.setFileName(fileName);
 			xlsWriter.save(this.matrix, this.pent, "notOptmized");
+			xlsWriter.save(this.matrixOpt, this.pent, "Optimized");
 
+			xlsWriter.close();
 		} else {
 			throw new LimitExceededException(
 					"The size of the columns is too big to create a xls file.");
