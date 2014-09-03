@@ -41,25 +41,25 @@ public class TriContXor {
 
 		return countXor;
 	}
-	
-	
 
 	private void optimize() {
 		this.initMatrixOpt();
 		this.copyMatrix();
 		this.removeNULLrows();
 
-		for (int j = 1; j < this.matrixOpt.getRowDimension()-1; j++) {
-			for (int i = this.max_size; i > (this.max_size - this.tri.getA().intValue()+1); i--) {
+		for (int j = 1; j < this.matrixOpt.getRowDimension() - 1; j++) {
+			for (int i = this.max_size; i > (this.max_size
+					- this.tri.getA().intValue() + 1); i--) {
 				double toCompare = this.matrixOpt.getEntry(j, i);
-				if(toCompare != NULL)
+				if (toCompare != NULL)
 					this.matrixOpt.setEntry(j, i, T);
 			}
 		}
-		for (int j = 2; j < this.matrixOpt.getRowDimension()-1; j++) {
-			for (int i = (this.max_size - this.tri.getA().intValue()); i > (this.max_size - 2*this.tri.getA().intValue() +1); i--) {
+		for (int j = 2; j < this.matrixOpt.getRowDimension() - 1; j++) {
+			for (int i = (this.max_size - this.tri.getA().intValue()); i > (this.max_size
+					- 2 * this.tri.getA().intValue() + 1); i--) {
 				double toCompare = this.matrixOpt.getEntry(j, i);
-				if(toCompare != NULL)
+				if (toCompare != NULL)
 					this.matrixOpt.setEntry(j, i, T);
 			}
 		}
@@ -67,25 +67,21 @@ public class TriContXor {
 	}
 
 	private void initMatrixOpt() {
-		this.matrixOpt = MatrixUtils.createRealMatrix(this.max_row,
+		this.matrixOpt = MatrixUtils.createRealMatrix(this.max_row+4,
 				this.max_size + 1);
-		
+
 	}
-
-
 
 	private void copyMatrix() {
 		int j = 0;
 		for (int i = 0; i < matrix.getRowDimension(); i++) {
-			if(!this.isCleanRow(matrix.getRow(i))){
+			if (!this.isCleanRow(matrix.getRow(i))) {
 				this.matrixOpt.setRow(j, matrix.getRow(i));
 				j++;
 			}
 		}
-		
+
 	}
-
-
 
 	public RealMatrix getMatrixOpt() {
 		return matrixOpt;
@@ -171,7 +167,37 @@ public class TriContXor {
 		}
 		matrix.setRow(nextRow, rowToWrite);
 
-		double[] rowToRead = matrix.getRow(nextRow);
+		nextRow = matrixOpt.getRowDimension()-1;
+		rowToWrite = matrixOpt.getRow(nextRow);
+		row = matrixOpt.getRow(0);
+		for (int i = this.tri.degree().intValue() - 1; i < matrixOpt
+				.getColumnDimension(); i++) {
+			int tempXor = 0;
+			boolean isCount = false;
+			double cell = row[i];
+
+			if (cell != NULL) {
+				for (int l = 1; l < matrixOpt.getRowDimension(); l++) {
+					double[] rowToCompare = matrixOpt.getRow(l);
+					double cellToCompare = rowToCompare[i];
+					if (cellToCompare != NULL) {
+						if (cellToCompare == T) {
+							if (!isCount) {
+								tempXor++;
+								isCount = true;
+							}
+						} else {
+							tempXor++;
+						}
+					}
+				}
+			}
+			rowToWrite[i] = tempXor;
+
+		}
+		matrixOpt.setRow(nextRow, rowToWrite);
+
+		double[] rowToRead = matrixOpt.getRow(nextRow);
 		int counter = 0;
 		for (int i = this.tri.degree().intValue() - 1; i < rowToRead.length; i++) {
 			int tx = (int) rowToRead[i];

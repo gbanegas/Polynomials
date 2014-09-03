@@ -14,7 +14,7 @@ public class TestOtimizationTrinomial {
 		Trinomial tri_3;
 		try {
 			TriContXor cont = new TriContXor();
-			tri_3 = new Trinomial(Polynomial.createFromString("x^11+x^9+x^0"));
+			tri_3 = new Trinomial(Polynomial.createFromString("x^16+x^3+x^0"));
 			int count_xor = cont.calculate(tri_3);
 			cont.saveXLS();
 			RealMatrix m = cont.getMatrixOpt();
