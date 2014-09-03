@@ -97,7 +97,7 @@ public class MainWindow extends javax.swing.JFrame {
 
 		jTextField3.setText("            ");
 		String[] wString = { "8", "16", "32", "64"};
-		JComboBox comboBox = new JComboBox(wString);
+		JComboBox<String> comboBox = new JComboBox<String>(wString);
 		comboBox.setSelectedIndex(2);
 		
 		
