@@ -34,7 +34,7 @@ public class TriContXor {
 		this.generateMatrix(nr);
 		this.reduction(nr);
 
-		this.repeatRemove();
+		//this.repeatRemove();
 		this.clean();
 		this.optimize();
 		int countXor = this.countXor();

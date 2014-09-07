@@ -58,7 +58,6 @@ public class XLSWriter {
 			workbook.write(out);
 			out.close();
 			
-			System.out.println("Excel written successfully..");
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

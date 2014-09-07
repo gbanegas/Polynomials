@@ -40,7 +40,9 @@ public class PolynomialContXor {
 		
 		this.reduction(nr);
 
-		this.repeatRemove();
+		//TODO: Verificar URGENTE
+		if(pol.degrees.size()>3)
+			this.repeatRemove();
 		this.clean();
 		this.optimize();
 		int countXor = this.countXor();

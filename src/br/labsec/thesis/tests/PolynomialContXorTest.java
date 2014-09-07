@@ -2,6 +2,7 @@ package br.labsec.thesis.tests;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import br.labsec.thesis.threads.Lock;
 import br.labsec.thesis.threads.ThreadCount;
@@ -25,8 +26,8 @@ public class PolynomialContXorTest {
 		ThreadCount c3 = new ThreadCount(polynomialsSept, hash, lock);
 		
 		c1.start();
-		c2.start();
-		c3.start();
+		//c2.start();
+		//c3.start();
 		
 		while (true) {
 		    try {
@@ -41,10 +42,19 @@ public class PolynomialContXorTest {
 		}
 		if(!c1.isAlive() && !c2.isAlive() && !c3.isAlive() )
 		{
-			System.out.println("all dead");
+			printResults(hash);
 		}
 		
 		
+		
+	}
+
+	private static void printResults(HashMap<String, Integer> hash) {
+		Set<String> keySet = hash.keySet();
+		for (String string : keySet) {
+			 int value = hash.get(string);
+			 System.out.println("Pol = " + string + " : " + value );
+		}
 		
 	}
 

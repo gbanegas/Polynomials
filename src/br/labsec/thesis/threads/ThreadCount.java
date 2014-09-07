@@ -30,8 +30,6 @@ public class ThreadCount extends Thread {
 			
 			try {
 				lock.lock();
-				System.out.println("Polynomial = " + pol.toPolynomialString()
-						+ " XORs = " + xor);
 				toSalve.put(listPol.get(i), xor);
 				lock.unlock();
 				try {
