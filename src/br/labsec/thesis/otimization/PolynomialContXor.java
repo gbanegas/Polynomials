@@ -30,7 +30,12 @@ public class PolynomialContXor {
 		actual_row = 1;
 		this.pol = pol;
 		int nr = this.calculateNR();
-		this.max_row = (nr * pol.degree().intValue() * 3) + 5;
+		if(pol.getA().intValue() > (pol.degree().intValue()/2) && pol.degrees.size()>3){
+			this.max_row = (nr * pol.degree().intValue() * pol.getA().intValue() * 3) + 5;
+		}
+		else{
+			this.max_row = (nr * pol.degree().intValue() * 3) + 5;
+		}
 		this.generateMatrix(nr);
 		
 		this.reduction(nr);
@@ -50,8 +55,13 @@ public class PolynomialContXor {
 		this.optimize();
 		if (this.matrix.getColumnDimension() <= 16384) {
 			XLSWriter xlsWriter = new XLSWriter();
-			xlsWriter.setFileName("Reduction_" + this.pol.degree().toString()
-					+ "_" + this.pol.getA().toString() + ".xlsx");
+			String fileName = "Reduction_" + this.pol.degree().toString();
+			for(int i = 0 ; i < this.exp.size();i++)
+			{
+				fileName = fileName+"_"+i;
+			}
+			fileName = fileName+".xlsx";
+			xlsWriter.setFileName(fileName);
 			xlsWriter.save(this.matrix, this.pol, "Not Optimized");
 			xlsWriter.save(this.matrixOpt, this.pol, "Optimized");
 
@@ -153,18 +163,18 @@ public class PolynomialContXor {
 		}
 		matrix.setRow(nextRow, rowToWrite);
 
-		nextRow = matrixOpt.getRowDimension()-1;
-		rowToWrite = matrixOpt.getRow(nextRow);
-		row = matrixOpt.getRow(0);
-		for (int i = this.pol.degree().intValue() - 1; i < matrixOpt
+		nextRow = matrix.getRowDimension()-1;
+		rowToWrite = matrix.getRow(nextRow);
+		row = matrix.getRow(0);
+		for (int i = this.pol.degree().intValue() - 1; i < matrix
 				.getColumnDimension(); i++) {
 			int tempXor = 0;
 			boolean isCount = false;
 			double cell = row[i];
 
 			if (cell != NULL) {
-				for (int l = 1; l < matrixOpt.getRowDimension(); l++) {
-					double[] rowToCompare = matrixOpt.getRow(l);
+				for (int l = 1; l < matrix.getRowDimension(); l++) {
+					double[] rowToCompare = matrix.getRow(l);
 					double cellToCompare = rowToCompare[i];
 					if (cellToCompare != NULL) {
 						if (cellToCompare == T) {
@@ -181,9 +191,9 @@ public class PolynomialContXor {
 			rowToWrite[i] = tempXor;
 
 		}
-		matrixOpt.setRow(nextRow, rowToWrite);
+		matrix.setRow(nextRow, rowToWrite);
 
-		double[] rowToRead = matrixOpt.getRow(nextRow);
+		double[] rowToRead = matrix.getRow(nextRow);
 		int counter = 0;
 		for (int i = this.pol.degree().intValue() - 1; i < rowToRead.length; i++) {
 			int tx = (int) rowToRead[i];

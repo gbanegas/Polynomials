@@ -131,7 +131,7 @@ public class Polynomial implements Comparable<Polynomial> {
 	 * terms in order. The O(nlogn) performance of insertions and deletions
 	 * might actually hurt us, though, so we might consider moving to a HashSet
 	 */
-	protected final TreeSet<BigInteger> degrees;
+	public final TreeSet<BigInteger> degrees;
 
 	/**
 	 * Construct a new, empty polynomial
