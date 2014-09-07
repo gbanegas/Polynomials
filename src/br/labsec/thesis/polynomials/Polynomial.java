@@ -3,6 +3,7 @@ package br.labsec.thesis.polynomials;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 /**
@@ -11,7 +12,6 @@ import java.util.TreeSet;
  * Supports standard arithmetic in the field, as well as reducibility tests.
  */
 public class Polynomial implements Comparable<Polynomial> {
-	
 
 	/** number of elements in the finite field GF(2^k) */
 	public static final BigInteger Q = BigInteger.valueOf(2L);
@@ -29,7 +29,6 @@ public class Polynomial implements Comparable<Polynomial> {
 			return -1 * o1.compareTo(o2);
 		}
 	}
-	
 
 	public boolean isIrreducible() {
 		return this.isIReducible();
@@ -71,20 +70,21 @@ public class Polynomial implements Comparable<Polynomial> {
 
 	/**
 	 * Constructs a polynomial using the bits from a vector of bits
-	 * @param b vector of bits
+	 * 
+	 * @param b
+	 *            vector of bits
 	 * @return Polynomial
 	 */
 	public static Polynomial createFromArrayVector(boolean[] b) {
 		TreeSet<BigInteger> dgrs = createDegreesCollection();
 		for (int i = 0; i < b.length; i++) {
-			if(b[i] == true)
-			{
+			if (b[i] == true) {
 				dgrs.add(BigInteger.valueOf(i));
 			}
 		}
 		return new Polynomial(dgrs);
 	}
-	
+
 	/**
 	 * Constructs a polynomial using the bits from a long. Note that Java does
 	 * not support unsigned longs.
@@ -430,14 +430,15 @@ public class Polynomial implements Comparable<Polynomial> {
 		}
 		return str.toString();
 	}
+
 	/**
 	 * Change the polynomial to a Byte[]
 	 */
-	
-	public boolean[] toByte()
-	{
-		boolean[] arrayToReturn =  new boolean[this.degree().intValue()+1];
-		for (BigInteger deg = degree(); deg.compareTo(BigInteger.ZERO) >= 0; deg = deg.subtract(BigInteger.ONE)) {
+
+	public boolean[] toByte() {
+		boolean[] arrayToReturn = new boolean[this.degree().intValue() + 1];
+		for (BigInteger deg = degree(); deg.compareTo(BigInteger.ZERO) >= 0; deg = deg
+				.subtract(BigInteger.ONE)) {
 			if (degrees.contains(deg)) {
 				arrayToReturn[deg.intValue()] = true;
 			} else {
@@ -575,5 +576,15 @@ public class Polynomial implements Comparable<Polynomial> {
 		return this.hasDegree(x.degree()) ? 1 : -1;
 	}
 
-	
+	public BigInteger getA() {
+		Iterator<BigInteger> iterator = this.degrees.descendingIterator();
+		BigInteger temp = iterator.next();
+		BigInteger toReturn = null;
+		while (temp.compareTo(this.degree()) != 0) {
+			toReturn = temp;
+			temp = iterator.next();
+		}
+		return toReturn;
+	}
+
 }
