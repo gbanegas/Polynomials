@@ -40,7 +40,7 @@ public class PentanomialCont {
 		this.generateMatrix(nr);
 		this.reduction(nr);
 		this.repeatRemove();
-		this.optimize();
+		//this.optimize();
 		return this.countXor();
 	}
 
@@ -369,7 +369,7 @@ public class PentanomialCont {
 			this.fileName = fileName;
 			xlsWriter.setFileName(fileName);
 			xlsWriter.save(this.matrix, this.pent, "notOptmized");
-			xlsWriter.save(this.matrixOpt, this.pent, "Optimized");
+			//xlsWriter.save(this.matrixOpt, this.pent, "Optimized");
 
 			xlsWriter.close();
 		} else {
