@@ -1,4 +1,4 @@
-package br.labsec.thesis.tests;
+package br.labsec.thesis.tests.cont;
 
 import java.util.ArrayList;
 import java.util.HashMap;
