@@ -138,17 +138,12 @@ public class PentanomialCont {
 
 	private void reduceOthers() {
 		ArrayList<Integer> rowsToReduce = this.getNeedToReduce();
-
 		for (int i = 0; i < rowsToReduce.size(); i++) {
 			for (int j = 0; j < this.exp.size(); j++) {
 				this.reduceRow(this.exp.get(j), rowsToReduce.get(i));
 
 			}
-		}
-
-		for (int i = 0; i < rowsToReduce.size(); i++) {
 			this.cleanReduced(rowsToReduce.get(i));
-
 		}
 
 	}
