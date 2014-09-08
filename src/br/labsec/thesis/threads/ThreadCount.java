@@ -1,7 +1,7 @@
 package br.labsec.thesis.threads;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.naming.LimitExceededException;
 
@@ -10,11 +10,11 @@ import br.labsec.thesis.polynomials.Polynomial;
 
 public class ThreadCount extends Thread {
 
-	private ArrayList<String> listPol;
+	private List<String> listPol;
 	private HashMap<String, Integer> toSalve;
 	private Lock lock;
 
-	public ThreadCount(ArrayList<String> listPol,
+	public ThreadCount(List<String> listPol,
 			HashMap<String, Integer> toSalve, Lock lock) {
 		this.listPol = listPol;
 		this.toSalve = toSalve;
@@ -23,6 +23,7 @@ public class ThreadCount extends Thread {
 
 	@Override
 	public void run() {
+		System.out.println("Starting thread... " + this.getId());
 		for (int i = 0; i < listPol.size(); i++) {
 			Polynomial pol = Polynomial.createFromString(listPol.get(i));
 			PolynomialContXor cont = new PolynomialContXor();
