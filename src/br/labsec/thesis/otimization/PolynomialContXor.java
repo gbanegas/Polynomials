@@ -23,58 +23,47 @@ public class PolynomialContXor {
 	private int max_size;
 	private int max_row;
 	private int actual_row;
-	
+
 	private ArrayList<Integer> exp;
-	
+
 	public int calculate(Polynomial pol) {
 		actual_row = 1;
 		this.pol = pol;
 		int nr = this.calculateNR();
-		if(pol.getA().intValue() > (pol.degree().intValue()/2) && pol.degrees.size()>3){
-			this.max_row = (nr * pol.degree().intValue() * pol.getA().intValue() * 3) + 5;
-		}
-		else{
+		if (pol.getA().intValue() > (pol.degree().intValue() / 2)
+				&& pol.degrees.size() > 3) {
+			defineMaxRows(pol, nr);
+		} else {
 			this.max_row = (nr * pol.degree().intValue() * 3) + 5;
 		}
 		this.generateMatrix(nr);
-		
+
 		this.reduction(nr);
 
-		//TODO: Verificar URGENTE
-		if(pol.degrees.size()>3)
-			this.repeatRemove();
+		this.repeatRemove();
 		this.clean();
 		this.optimize();
 		int countXor = this.countXor();
 
 		return countXor;
 	}
-	
-	public void saveXLS() throws LimitExceededException {
-		for (int i = 0; i < this.calculateNR(); i++)
-			this.clean();
 
-		this.optimize();
-		if (this.matrix.getColumnDimension() <= 16384) {
-			XLSWriter xlsWriter = new XLSWriter();
-			String fileName = "Reduction_" + this.pol.degree().toString();
-			for(int i = 0 ; i < this.exp.size();i++)
-			{
-				fileName = fileName+"_"+i;
-			}
-			fileName = fileName+".xlsx";
-			xlsWriter.setFileName(fileName);
-			xlsWriter.save(this.matrix, this.pol, "Not Optimized");
-			xlsWriter.save(this.matrixOpt, this.pol, "Optimized");
-
-			xlsWriter.close();
-
+	private void defineMaxRows(Polynomial pol, int nr) {
+		if (pol.getA().intValue() > (2 * pol.degree().intValue()) / 3) {
+			int temp = 1;
+			Iterator<BigInteger> it = pol.degrees.iterator();
+			if(it.hasNext())
+				temp = temp *it.next().intValue();
+			if(it.hasNext())
+				temp = temp *it.next().intValue();
+			if(it.hasNext())
+				temp = temp *it.next().intValue();
+			this.max_row = (nr * temp*10) + 5;
 		} else {
-			throw new LimitExceededException(
-					"The size of the columns is too big to create a xls file.");
+			this.max_row = (nr * pol.degree().intValue() * pol.degrees.size()) + 5;
 		}
 	}
-	
+
 	private void optimize() {
 		this.initMatrixOpt();
 		this.copyMatrix();
@@ -98,7 +87,7 @@ public class PolynomialContXor {
 		}
 
 	}
-	
+
 	private void removeNULLrows() {
 		int index = this.findNull();
 		this.matrixOpt = MatrixUtils.createRealMatrix(index,
@@ -109,6 +98,7 @@ public class PolynomialContXor {
 			}
 		}
 	}
+
 	private int findNull() {
 		for (int i = 0; i < this.matrix.getRowDimension(); i++) {
 			double[] row = this.matrix.getRow(i);
@@ -122,10 +112,9 @@ public class PolynomialContXor {
 		}
 		return -1;
 	}
-	
 
 	private void initMatrixOpt() {
-		this.matrixOpt = MatrixUtils.createRealMatrix(this.max_row+4,
+		this.matrixOpt = MatrixUtils.createRealMatrix(this.max_row + 4,
 				this.max_size + 1);
 
 	}
@@ -141,7 +130,6 @@ public class PolynomialContXor {
 
 	}
 
-	
 	private int countXor() {
 		int nextRow = this.actual_row + 2;
 		double[] rowToWrite = matrix.getRow(nextRow);
@@ -165,7 +153,7 @@ public class PolynomialContXor {
 		}
 		matrix.setRow(nextRow, rowToWrite);
 
-		nextRow = matrix.getRowDimension()-1;
+		nextRow = matrix.getRowDimension() - 1;
 		rowToWrite = matrix.getRow(nextRow);
 		row = matrix.getRow(0);
 		for (int i = this.pol.degree().intValue() - 1; i < matrix
@@ -204,7 +192,6 @@ public class PolynomialContXor {
 		return counter;
 	}
 
-	
 	private void repeatRemove() {
 		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
 			double[] row = matrix.getRow(j);
@@ -237,7 +224,6 @@ public class PolynomialContXor {
 
 	}
 
-	
 	private int calculateNR() {
 		BigInteger bigMaxSize = (this.pol.degree()
 				.multiply(new BigInteger("2"))).subtract(new BigInteger("2"));
@@ -252,14 +238,14 @@ public class PolynomialContXor {
 		}
 		return nr;
 	}
-	
+
 	private void generateMatrix(int nr) {
 		this.matrix = MatrixUtils.createRealMatrix(this.max_row,
 				this.max_size + 1);
 		this.cleanMatrix();
 
 	}
-	
+
 	private void cleanMatrix() {
 		for (int j = 0; j < this.matrix.getRowDimension(); j++) {
 			for (int i = 0; i < this.matrix.getColumnDimension(); i++) {
@@ -268,7 +254,6 @@ public class PolynomialContXor {
 		}
 
 	}
-	
 
 	private void reduction(int nr) {
 		this.firstRow();
@@ -278,13 +263,14 @@ public class PolynomialContXor {
 			this.mountFirst(this.exp.get(j), h);
 			h++;
 		}
+
 		this.actual_row = h;
 		for (int i = 0; i < nr; i++) {
 			this.reduceOthers();
 		}
 
 	}
-	
+
 	private void reduceOthers() {
 		ArrayList<Integer> rowsToReduce = this.getNeedToReduce();
 		for (int i = 0; i < rowsToReduce.size(); i++) {
@@ -296,12 +282,14 @@ public class PolynomialContXor {
 		}
 
 	}
-	
+
 	private ArrayList<Integer> getNeedToReduce() {
 		ArrayList<Integer> indexOfRows = new ArrayList<Integer>();
-
+		int index = (this.max_size - this.pol.degree().intValue());
 		for (int i = 2; i < this.matrix.getRowDimension(); i++) {
-			if (this.matrix.getEntry(i, this.pol.degree().intValue() - 1) != NULL) {
+
+			double value = this.matrix.getEntry(i, index);
+			if (value != NULL) {
 				indexOfRows.add(i);
 			}
 
@@ -339,7 +327,7 @@ public class PolynomialContXor {
 		this.actual_row++;
 
 	}
-	
+
 	private int getIndex(Integer indexOfRow) {
 		double[] row = this.matrix.getRow(indexOfRow);
 		for (int i = 0; i < row.length; i++) {
@@ -348,7 +336,7 @@ public class PolynomialContXor {
 		}
 		return -1;
 	}
-	
+
 	private void mountFirst(Integer exp, Integer row) {
 		int index = this.max_size;
 		double[] r = this.matrix.getRow(row);
@@ -366,6 +354,7 @@ public class PolynomialContXor {
 		this.matrix.setRow(row, r);
 
 	}
+
 	private void firstRow() {
 		int temp = this.max_size;
 		for (int i = 0; i < this.matrix.getColumnDimension(); i++) {
@@ -374,22 +363,22 @@ public class PolynomialContXor {
 		}
 
 	}
-	
+
 	private void extractExp() {
 		exp = new ArrayList<>();
-		Iterator<BigInteger> iterator = this.pol.getDegrees().descendingIterator();
+		Iterator<BigInteger> iterator = this.pol.getDegrees()
+				.descendingIterator();
 		BigInteger ex = iterator.next();
-		while(ex.compareTo(this.pol.degree()) != 0)
-		{
+		while (ex.compareTo(this.pol.degree()) != 0) {
 			exp.add(ex.intValue());
 			ex = iterator.next();
-			
+
 		}
 
 		Collections.sort(exp);
 
 	}
-	
+
 	private void clean() {
 		for (int i = 1; i < this.matrix.getRowDimension(); i++) {
 			double[] row = this.matrix.getRow(i);
@@ -435,5 +424,28 @@ public class PolynomialContXor {
 
 	}
 
+	public void saveXLS() throws LimitExceededException {
+		for (int i = 0; i < this.calculateNR(); i++)
+			this.clean();
+
+		this.optimize();
+		if (this.matrix.getColumnDimension() <= 16384) {
+			XLSWriter xlsWriter = new XLSWriter();
+			String fileName = "Reduction_" + this.pol.degree().toString();
+			for (int i = 0; i < this.exp.size(); i++) {
+				fileName = fileName + "_" + i;
+			}
+			fileName = fileName + ".xlsx";
+			xlsWriter.setFileName(fileName);
+			xlsWriter.save(this.matrix, this.pol, "Not Optimized");
+			xlsWriter.save(this.matrixOpt, this.pol, "Optimized");
+
+			xlsWriter.close();
+
+		} else {
+			throw new LimitExceededException(
+					"The size of the columns is too big to create a xls file.");
+		}
+	}
 
 }

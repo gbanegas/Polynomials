@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 import br.labsec.thesis.threads.Lock;
@@ -17,7 +16,7 @@ import br.labsec.thesis.threads.ThreadCount;
 
 public class PolynomialContXorTest {
 
-	private static final int DEGREE = 163;
+	private static final int DEGREE = 32;
 
 	/**
 	 * @param args
@@ -31,11 +30,10 @@ public class PolynomialContXorTest {
 		Lock lock = new Lock();
 
 		ArrayList<ThreadCount> threads = new ArrayList<ThreadCount>();
-		for (int i = 0; i < polynomials.size(); i++) {
-			ThreadCount c1 = new ThreadCount(polynomials.subList(i, i), hash,
-					lock);
+			ThreadCount c1 = new ThreadCount(polynomials.subList(0, polynomials.size()/2), hash,lock);
+			ThreadCount c2 = new ThreadCount(polynomials.subList( polynomials.size()/2, polynomials.size()), hash,lock);
 			threads.add(c1);
-		}
+			threads.add(c2);
 
 		System.out.println("Starting threads...");
 
@@ -60,6 +58,7 @@ public class PolynomialContXorTest {
 	}
 
 	private static ArrayList<String> readFile() {
+		ArrayList<String> list = new ArrayList<String>();
 		String fileName = "list_" + DEGREE + ".txt";
 		String line = null;
 		try {
@@ -70,7 +69,9 @@ public class PolynomialContXorTest {
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
 
 			while ((line = bufferedReader.readLine()) != null) {
+				line = line.replace("+ 1", "+x^0");
 				System.out.println(line);
+				list.add(line);
 			}
 
 			// Always close files.
@@ -82,7 +83,7 @@ public class PolynomialContXorTest {
 			// Or we could just do this:
 			// ex.printStackTrace();
 		}
-		return null;
+		return list;
 	}
 
 	private static void findBest(HashMap<String, Integer> hash) {
